@@ -49,7 +49,7 @@ void TSVetorOrdenado<par> :: insere(Chave chave, Item valor) {
     //Se a chave já existe, atualiza o seu valor
     int r = rank(chave);
 
-    if(r != n && vo[r].chave == chave) {
+    if(r != n && seleciona(r) == chave) {
         vo[r].valor += 1;
     }
     else {
