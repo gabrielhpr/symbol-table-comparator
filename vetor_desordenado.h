@@ -2,10 +2,9 @@
 #define TS_VETOR_DESORDENADO_H
 
 #include <iostream>
+#include "estruturas.h"
 using namespace std;
 
-typedef string Chave;
-typedef int Item;
 
 template <class par>
 class TSVetorDesordenado { 
@@ -142,6 +141,5 @@ void TSVetorDesordenado<par> :: exibeTS() {
         cout << "Chave: " << vd[i].chave << ", Valor: " << vd[i].valor << endl;
     }
 }
-
 
 #endif

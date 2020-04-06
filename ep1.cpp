@@ -2,6 +2,9 @@
 #include <fstream>
 #include "vetor_desordenado.h"
 #include "vetor_ordenado.h"
+#include "lista_ligada_desordenada.h"
+#include "lista_ligada_ordenada.h"
+#include "arvore_busca_binaria.h"
 
 using namespace std;
 
@@ -14,9 +17,8 @@ a estrutura for ordenada (ex vetor ordenado) r representa a posição da chave
 
 SELECIONA
 Chave seleciona(int k) - Devolve uma chave de rank k - facilita a busca em ordenados
-
-
 */
+
 struct par {
     string chave;
     int valor;
@@ -26,7 +28,7 @@ typedef struct par par;
 
 int main() {
 
-    TSVetorOrdenado<par> ts;
+    TSArvoreBuscaBinaria<par> ts;
 
     ifstream texto;
     string palavra;

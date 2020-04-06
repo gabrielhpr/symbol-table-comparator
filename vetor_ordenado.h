@@ -2,6 +2,7 @@
 #define TS_VETOR_ORDENADO_H
 
 #include <iostream>
+#include "estruturas.h"
 using namespace std;
 
 typedef string Chave;
