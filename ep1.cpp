@@ -29,7 +29,7 @@ typedef struct par par;
 
 int main() {
 
-    TSTreaps<par> ts;
+    TSTreaps    <par> ts;
 
     ifstream texto;
     string palavra;
@@ -50,9 +50,23 @@ int main() {
         //teste++;
         //if(teste == 3) break;
     }
-    ts.exibeTS();
-    //Item t = ts.devolve("Luís");
-    //cout << t << endl;
+    string command = "";
+
+    while(command != "stop") { 
+        cin >> command;
+        if(command == "exibe")
+            ts.exibeTS();
+        else if(command == "remove") {
+            cout << "quem ?" << endl;
+            string str;
+            cin >> str;
+            ts.remove(str);
+        }
+        //Item t = ts.devolve("Luís");
+        //cout << t << endl;
+    }
+
+    
 
 
     return 0;

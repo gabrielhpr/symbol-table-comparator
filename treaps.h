@@ -2,9 +2,9 @@
 #define TS_TREAPS_H
 
 #include <iostream>
-#include <ctime>
-#include <climits>
-#include "estruturas.h"
+#include <ctime> 
+#include <climits> /*INT_MAX*/
+#include "estruturas.h" /* NoTreap* */
 using namespace std;
 
 
@@ -43,6 +43,7 @@ class TSTreaps {
 template <class par>
 TSTreaps<par> :: TSTreaps() {
     n = 0;
+    srand((int) time(0));
     raiz = nullptr;
 }
 
@@ -92,8 +93,7 @@ NoTreap* TSTreaps<par> :: criaNo(Chave chave, Item valor) {
     NoTreap* novo = new NoTreap;
     novo->chave = chave;
     novo->valor = valor;
-    srand((int) time(0));
-    novo->prioridade = rand()% 2000000;    
+    novo->prioridade = rand()% INT_MAX;    
     novo->esq = nullptr;
     novo->dir = nullptr;
     novo->quantNosSubArvEsq = 0;
@@ -175,48 +175,54 @@ NoTreap* TSTreaps<par> :: removeUtilRecur(NoTreap* q, Chave chave, bool& removeu
         delete q;
         q = nullptr;
         removeu = true;
-    }
-    else if(q->chave == chave && q->esq == nullptr) {
-        NoABB* aux;
-        aux = q->dir;
-        delete q;
-        q = aux;
-        removeu = true;
+        n--;
     }
     else if(q->chave == chave) {
-        NoABB* maxSubEsqNo;
-        Item maxSubEsqItem;
-        Chave chaveMaxSubEsq;
+        if(q->dir == nullptr) {
+            q = rotacaoDir(q);
+            q->dir = removeUtilRecur(q->dir, chave, removeu);
+            if(removeu == true) {
+                q->quantNosSubArvDir++;
+            }
+        }
+        else if(q->esq == nullptr) {
+            q = rotacaoEsq(q);
+            q->esq = removeUtilRecur(q->esq, chave, removeu);
+            if(removeu == true) {
+                q->quantNosSubArvEsq++;
+            }
+        }
+        else {
+            if(q->dir->prioridade > q->esq->prioridade) {
+                q = rotacaoEsq(q);
+                q->esq = removeUtilRecur(q->esq, chave, removeu);
+                if(removeu == true) {
+                    q->quantNosSubArvEsq++;
+                }
 
-        chaveMaxSubEsq = seleciona(rank(q)-1);
-        maxSubEsqItem = devolve(chaveMaxSubEsq);
-        maxSubEsqNo = criaNo(chaveMaxSubEsq, maxSubEsqItem);
-
-        removeu = false;
-        q->esq = removeUtilRecur(q->esq, chaveMaxSubEsq, removeu);
-
-        maxSubEsqNo->esq = q->esq;
-        maxSubEsqNo->dir = q->dir;
-        maxSubEsqNo->quantNosSubArvEsq = q->quantNosSubArvEsq - 1;
-        maxSubEsqNo->quantNosSubArvDir = q->quantNosSubArvDir;
-
-        delete q;
-        q = maxSubEsqNo;
-
-        removeu = true;
-    }
-    else if(q->chave > chave) {
-        q->esq = removeUtilRecur(q->esq, chave);
-        if(removeu == true) {
-            q->quantNosSubArvEsq--;
+            }
+            else {
+                q = rotacaoDir(q);
+                q->dir = removeUtilRecur(q->dir, chave, removeu);
+                if(removeu == true) {
+                    q->quantNosSubArvDir++;
+                }
+            }
         }
     }
-    else {
-        q->dir = removeUtilRecur(q->dir, chave);
+    else if(chave < q->chave) {
+        q->esq = removeUtilRecur(q->esq, chave, removeu);
         if(removeu == true) {
-            q->quantNosSubArvDir--;
+            q->quantNosSubArvEsq++;
         }
     }
+    else if(chave > q->chave) {
+        q->dir = removeUtilRecur(q->dir, chave, removeu);
+        if(removeu == true) {
+            q->quantNosSubArvDir++;
+        }
+    }
+    
     return q;
 }
 
@@ -237,7 +243,7 @@ int TSTreaps<par> :: rank(Chave chave) {
     }
     //Caso sub árvore esquerda
     else {
-        NoABB* aux;
+        NoTreap* aux;
         if(chave < raiz->chave) {
             aux = raiz->esq;
         }
@@ -267,7 +273,7 @@ template <class par>
 Chave TSTreaps<par> :: seleciona(int k) {
     Chave chave = "";
     int r;
-    NoABB* aux = raiz;
+    NoTreap* aux = raiz;
     while(aux != nullptr) {
         r = rank(aux->chave);
         if(r == k) {
