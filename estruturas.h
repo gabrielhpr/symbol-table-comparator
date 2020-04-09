@@ -24,6 +24,17 @@ class NoABB {
         NoABB* dir;
 };
 
+class NoTreap {
+    public: 
+        Chave chave;
+        Item valor;
+        int prioridade;
+        int quantNosSubArvEsq;
+        int quantNosSubArvDir;
+        NoTreap* esq;
+        NoTreap* dir;
+};  
+
 
 
 

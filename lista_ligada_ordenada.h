@@ -5,6 +5,10 @@
 #include "estruturas.h"
 using namespace std;
 
+/*
+ideia guardar um ponteiro para o fim, assim é possível checar no insere se r == n
+insere direto no final, assim fica n comparações e não 2n
+*/
 
 template <class par>
 class TSListaLigadaOrdenada { 
@@ -115,7 +119,8 @@ int TSListaLigadaOrdenada<par> :: rank(Chave chave) {
     Celula* aux;
 
     for (aux = cabeca_llo->prox; aux != nullptr; aux = aux->prox) {
-        if(aux->chave < chave) n_elements++;
+        if(aux->chave >= chave) break;
+        n_elements++;
     }
     return n_elements;
 }

@@ -282,6 +282,8 @@ void TSArvoreBuscaBinaria<par> :: exibeTSUtilRecur(NoABB* q) {
 template <class par>
 void TSArvoreBuscaBinaria<par> :: exibeTS() {
     exibeTSUtilRecur(raiz);
+    cout << n << endl;
+
 }
 
 #endif
