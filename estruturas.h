@@ -35,6 +35,17 @@ class NoTreap {
         NoTreap* dir;
 };  
 
+class NoRN {
+    public: 
+        Chave chave;
+        Item valor;
+        char cor;
+        int quantNosSubArvEsq;
+        int quantNosSubArvDir;
+        NoRN* esq;
+        NoRN* dir;
+        NoRN* pai;
+};
 
 
 

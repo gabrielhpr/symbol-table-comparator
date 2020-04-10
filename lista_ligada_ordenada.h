@@ -43,7 +43,7 @@ template <class par>
 TSListaLigadaOrdenada<par> :: ~TSListaLigadaOrdenada() {
     Celula* aux;
 
-    for (aux = cabeca_llo; aux != nullptr; aux = aux->prox) {
+    for (aux = cabeca_llo; aux != nullptr;) {
         cabeca_llo = aux->prox;
         delete aux;
         aux = cabeca_llo;

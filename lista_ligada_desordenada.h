@@ -39,7 +39,7 @@ template <class par>
 TSListaLigadaDesordenada<par> :: ~TSListaLigadaDesordenada() {
     Celula* aux;
 
-    for (aux = cabeca_lld; aux != nullptr; aux = aux->prox) {
+    for (aux = cabeca_lld; aux != nullptr;) {
         cabeca_lld = aux->prox;
         delete aux;
         aux = cabeca_lld;

@@ -220,7 +220,6 @@ int TSArvoreBuscaBinaria<par> :: rank(Chave chave) {
     if(chave == raiz->chave) {
         n_elements = raiz->quantNosSubArvEsq;
     }
-    //Caso sub árvore esquerda
     else {
         NoABB* aux;
         if(chave < raiz->chave) {

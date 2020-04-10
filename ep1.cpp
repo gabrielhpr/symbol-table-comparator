@@ -6,6 +6,7 @@
 #include "lista_ligada_ordenada.h"
 #include "arvore_busca_binaria.h"
 #include "treaps.h"
+#include "arvores_rubro_negras.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ typedef struct par par;
 
 int main() {
 
-    TSTreaps    <par> ts;
+    TSArvoresRubroNegras <par> ts;
 
     ifstream texto;
     string palavra;
@@ -47,9 +48,13 @@ int main() {
         //printf("\nteste %c \n", 76);
         
         ts.insere(palavra, 1);
+
         //teste++;
         //if(teste == 3) break;
     }
+    ts.exibeTS();
+
+    /*
     string command = "";
 
     while(command != "stop") { 
@@ -65,7 +70,7 @@ int main() {
         //Item t = ts.devolve("Luís");
         //cout << t << endl;
     }
-
+    */
     
 
 
