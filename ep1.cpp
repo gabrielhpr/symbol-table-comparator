@@ -39,33 +39,26 @@ int main() {
     int teste = 0;
 
     while(texto >> palavra) {
-        //cout << palavra << endl;
-        //cout << palavra.size() << endl;
-
-        //for (auto i = palavra.begin(); i != palavra.end(); i++)  {
-          //  printf(" %c ", *i);
-        //}
-        //printf("\nteste %c \n", 76);
-        
         ts.insere(palavra, 1);
-
-        //teste++;
-        //if(teste == 3) break;
     }
-    //ts.exibeTS();
-
     
     string command = "";
 
     while(command != "stop") { 
         cin >> command;
-        if(command == "exibe")
+        if(command == "e")
             ts.exibeTS();
-        else if(command == "remove") {
+        else if(command == "r") {
             cout << "quem ?" << endl;
             string str;
             cin >> str;
             ts.remove(str);
+        }
+        else if(command == "i") {
+            cout << "manda a chave: " << endl;
+            string str;
+            cin >> str;
+            ts.insere(str, 1);
         }
         //Item t = ts.devolve("Luís");
         //cout << t << endl;

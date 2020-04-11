@@ -70,6 +70,8 @@ NoRN* TSArvoresRubroNegras<par> :: criaNo(Chave chave, Item valor) {
 }
 
 /* O(log n) */
+/*Atualizar o numero de elementos das subarvores por meio de uma busca em abb, e atualizar tbm
+durante as rotacoes, fazer isso no insere e no remove*/
 template <class par>
 void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
     //Caso raiz nula
@@ -243,12 +245,19 @@ NoRN* TSArvoresRubroNegras<par> :: removeUtilRecur(NoRN* q, Chave chave, bool& r
 template <class par>
 void TSArvoresRubroNegras<par> :: remove(Chave chave) {
     bool removeu = false;
-
     NoRN* p = raiz;
 
-    //Caso só existe a raiz
+    //Raiz nula
+    if(raiz == nullptr) {
+        cout << "Não há elementos para serem removidos" << endl;
+        return;
+    }
+
+    //Caso só exista a raiz
     if(raiz->chave == chave && raiz->dir == nullptr && raiz->esq == nullptr) {
+        cout << "remover a raiz folha" << endl;
         delete p;
+        raiz = nullptr;
         return;
     }
 
@@ -267,51 +276,52 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
     //Não achou o nó a ser removido
     if(achou == 0) return;
     
+    NoRN* subs;
     //Enquanto p não é uma folha
     while( !(p->esq == nullptr && p->dir == nullptr) ) {
-        if(p->esq != nullptr || p->dir != nullptr) {
-            //Pega o menor da sub árvore direita, ou o maior da sub árvore esquerda
-            NoRN *subs;
-            if (p->dir != nullptr) {
-                subs = p->dir;
-                while (subs->esq != nullptr) 
-                    subs = subs->esq;
-            }
-            else{
-                subs = p->esq;
-                while (subs->dir != nullptr) 
-                    subs = subs->dir;
-            }
-            //Substitue o p com o subs
-            p->chave = subs->chave;
-            p->valor = subs->valor;
-            p = subs;
+        //Pega o menor da sub árvore direita, ou o maior da sub árvore esquerda
+        if (p->dir != nullptr) {
+            subs = p->dir;
+            while (subs->esq != nullptr)
+                subs = subs->esq;
         }
+        else {
+            subs = p->esq;
+            while (subs->dir != nullptr)
+                subs = subs->dir;
+        }
+        //Substitue o p com o subs
+        p->chave = subs->chave;
+        p->valor = subs->valor;
+        p = subs;
     }
-
+    cout << "subs " << subs << endl;
     //Folha vermelha, só remover
-    if(p->cor == 'V' && p->esq == nullptr && p->dir == nullptr) {
+    if(p->cor == 'V') {
+        if(p == p->pai->esq) p->pai->esq = nullptr;
+        else p->pai->dir = nullptr;     
         delete p;
-        return;
     }
     //Folha preta
-    else if (p->cor == 'P' && p->esq == nullptr && p->dir == nullptr) {
+    else if (p->cor == 'P') {
         p->ehDuploPreto = true;
         while (p != nullptr && p->ehDuploPreto == true) {
             NoRN *pai = p->pai;
             //Caso 2.0 - Duplo preto é a raiz -> raiz fica preta
-            if (pai == raiz){
-                pai->cor = 'P';
+            if (p == raiz) {
+                p->cor = 'P';
                 //Deleta o p
-                delete p;
+                if(removeu == false) delete p;
+                else p->ehDuploPreto = false;
                 break;
             }
             //Caso 2.1 - Irmão preto com filhos pretos ou sem filhos
+            //Acha o irmão
             NoRN *irmao = (p == pai->dir) ? pai->esq : pai->dir;
 
+            //Acha os sobrinhos
             NoRN *sobrinhoPerto, *sobrinhoLonge;
             sobrinhoPerto = sobrinhoLonge = nullptr;
-
             if (irmao != nullptr && irmao == irmao->pai->dir){
                 sobrinhoPerto = irmao->esq;
                 sobrinhoLonge = irmao->dir;
@@ -320,11 +330,16 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                 sobrinhoPerto = irmao->dir;
                 sobrinhoLonge = irmao->esq;
             }
+            /******************/
 
             //Se o irmão é null, o pai vira duplo preto
             if (irmao == nullptr){
                 pai->ehDuploPreto = true;
-                delete p;
+                if(removeu == false) { 
+                    delete p;
+                    removeu = true;
+                }
+                else p->ehDuploPreto = false;
                 p = pai;
             }
 
@@ -336,8 +351,15 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                 if (pai->cor == 'V') {
                     pai->cor = 'P';
                     pai->ehDuploPreto = false;
+                    if(removeu == false) {
+                        if(p == pai->esq) pai->esq = nullptr;
+                        else pai->dir = nullptr;
+                        delete p;
+                        removeu = true;
+                    }
                     break;
                 }
+                else p->ehDuploPreto = false;
                 p = pai;
             }
             //Caso 2.2 - Irmão vermelho
@@ -399,14 +421,16 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
             //Caso 2.3 irmão preto e sobrinho perto vermelho e sobrinho longe preto ou null
             else if (irmao->cor == 'P' && (sobrinhoPerto != nullptr && sobrinhoPerto->cor == 'V') && (sobrinhoLonge == nullptr || sobrinhoLonge->cor == 'P')) {
                 pai = irmao->pai;
-
+                cout << "caso 2.3" << endl;
                 //Troca a cor do irmão com o sobrinho mais próximo
-                char corTroca = irmao->cor;
-                irmao->cor = sobrinhoPerto->cor;
-                sobrinhoPerto->cor = corTroca;
+                irmao->cor = 'V';
+                sobrinhoPerto->cor = 'P';
+
+                
 
                 //Rotaciona contra o sentido do DP, usando o irmão como eixo
                 if (irmao == pai->dir) {
+                    cout << "entrou no irmao pai dir" << endl;
                     irmao->esq = sobrinhoPerto->dir;
                     if (sobrinhoPerto->dir != nullptr)
                         sobrinhoPerto->dir->pai = irmao;
@@ -416,6 +440,7 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                     sobrinhoPerto->pai = pai;
                 }
                 else if (irmao == pai->esq) {
+                    cout << "entrou no irmao pai esq" << endl;
                     irmao->dir = sobrinhoPerto->esq;
                     if (sobrinhoPerto->esq != nullptr)
                         sobrinhoPerto->esq->pai = irmao;
@@ -426,13 +451,20 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                 }
             }
             //Caso 2.4
-            else if (irmao->cor == 'P' && (sobrinhoLonge != nullptr && sobrinhoLonge->cor == 'V') && (sobrinhoPerto == nullptr || sobrinhoPerto->cor == 'P')) {
+            else if (irmao->cor == 'P' && (sobrinhoLonge != nullptr && sobrinhoLonge->cor == 'V') && (sobrinhoPerto == nullptr || sobrinhoPerto->cor == 'P' || sobrinhoLonge->cor == 'V')) {
+                cout << "caso 2.4" << endl;
                 char corTroca;
                 corTroca = pai->cor;
                 pai->cor = irmao->cor;
                 irmao->cor = corTroca;
+
+                cout << "pai chave " << pai->chave << endl;
+                cout << "irmao chave " << irmao->chave << endl;
+                cout << "sobrinhoPerto chave " << sobrinhoPerto->chave << endl;
+
                 //Roda na direção do duplopreto
                 if (p == pai->esq) {
+                    cout << "p pai esq" << endl;
                     pai->dir = irmao->esq;
                     if (irmao->esq != nullptr)
                         irmao->esq->pai = pai;
@@ -443,12 +475,24 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                         else
                             pai->pai->dir = irmao;
                     }
+
+                    //Se o pai do pai é nullptr, pai é raiz, então o irmão vira a raiz
+                    if(pai->pai == nullptr) raiz = irmao;
+
                     irmao->pai = pai->pai;
                     pai->pai = irmao;
                     sobrinhoLonge->cor = 'P';
+
+                    if(removeu == false) {
+                        if(p == p->pai->esq) p->pai->esq = nullptr;
+                        else pai->dir = nullptr;
+                        delete p;
+                    }
+                    else p->ehDuploPreto = false;
                     break;
                 }
                 else if (p == pai->dir) {
+                    cout << "p pai dir" << endl;
                     pai->esq = irmao->dir;
                     if (irmao->dir != nullptr)
                         irmao->dir->pai = pai;
@@ -459,9 +503,19 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                         else
                             pai->pai->dir = irmao;
                     }
+
+                    //Se o pai do pai é nullptr, pai é raiz, então o irmão vira a raiz
+                    if(pai->pai == nullptr) raiz = irmao;
+
                     irmao->pai = pai->pai;
                     pai->pai = irmao;
                     sobrinhoLonge->cor = 'P';
+                    if(removeu == false) {
+                        if(p == p->pai->esq) pai->esq = nullptr;
+                        else pai->dir = nullptr;
+                        delete p;
+                    }
+                    else p->ehDuploPreto = false;
                     break;
                 }
             }
@@ -477,7 +531,6 @@ int TSArvoresRubroNegras<par> :: rank(Chave chave) {
     if(chave == raiz->chave) {
         n_elements = raiz->quantNosSubArvEsq;
     }
-    //Caso sub árvore esquerda
     else {
         NoRN* aux;
         if(chave < raiz->chave) {
@@ -531,13 +584,18 @@ template <class par>
 void TSArvoresRubroNegras<par> :: exibeTSUtilRecur(NoRN* q) {
     if(q != nullptr) {
         exibeTSUtilRecur(q->esq);
-        cout << "Chave: " << q->chave << ", Valor: " << q->valor << endl;
+        cout << "Chave: " << q->chave << ", Valor: " << q->valor << ", Cor: "<< q->cor
+        << " ,fesq: " << q->esq << ", fdir: " << q->dir << endl;
         exibeTSUtilRecur(q->dir);
     }
 }
 
 template <class par>
 void TSArvoresRubroNegras<par> :: exibeTS() {
+    if(raiz == nullptr) {
+        cout << "Não há elementos" << endl;
+        return; 
+    }
     exibeTSUtilRecur(raiz);
     cout << n << endl;
 }
