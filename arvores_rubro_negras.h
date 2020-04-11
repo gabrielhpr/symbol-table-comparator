@@ -63,6 +63,7 @@ NoRN* TSArvoresRubroNegras<par> :: criaNo(Chave chave, Item valor) {
     novo->esq = nullptr;
     novo->dir = nullptr;
     novo->pai = nullptr;
+    novo->ehDuploPreto = false;
     novo->quantNosSubArvEsq = 0;
     novo->quantNosSubArvDir = 0;
     return novo;
@@ -242,7 +243,230 @@ NoRN* TSArvoresRubroNegras<par> :: removeUtilRecur(NoRN* q, Chave chave, bool& r
 template <class par>
 void TSArvoresRubroNegras<par> :: remove(Chave chave) {
     bool removeu = false;
+
+    NoRN* p = raiz;
+
+    //Caso só existe a raiz
+    if(raiz->chave == chave && raiz->dir == nullptr && raiz->esq == nullptr) {
+        delete p;
+        return;
+    }
+
+    //Procura a chave
+    bool achou = 0;
+    while(p != nullptr && !achou) {
+        if(chave < p->chave) {
+            p = p->esq;
+        }
+        else if(chave > p->chave) {
+            p = p->dir;
+        }
+        else achou = 1;
+    }
+
+    //Não achou o nó a ser removido
+    if(achou == 0) return;
     
+    //Enquanto p não é uma folha
+    while( !(p->esq == nullptr && p->dir == nullptr) ) {
+        if(p->esq != nullptr || p->dir != nullptr) {
+            //Pega o menor da sub árvore direita, ou o maior da sub árvore esquerda
+            NoRN *subs;
+            if (p->dir != nullptr) {
+                subs = p->dir;
+                while (subs->esq != nullptr) 
+                    subs = subs->esq;
+            }
+            else{
+                subs = p->esq;
+                while (subs->dir != nullptr) 
+                    subs = subs->dir;
+            }
+            //Substitue o p com o subs
+            p->chave = subs->chave;
+            p->valor = subs->valor;
+            p = subs;
+        }
+    }
+
+    //Folha vermelha, só remover
+    if(p->cor == 'V' && p->esq == nullptr && p->dir == nullptr) {
+        delete p;
+        return;
+    }
+    //Folha preta
+    else if (p->cor == 'P' && p->esq == nullptr && p->dir == nullptr) {
+        p->ehDuploPreto = true;
+        while (p != nullptr && p->ehDuploPreto == true) {
+            NoRN *pai = p->pai;
+            //Caso 2.0 - Duplo preto é a raiz -> raiz fica preta
+            if (pai == raiz){
+                pai->cor = 'P';
+                //Deleta o p
+                delete p;
+                break;
+            }
+            //Caso 2.1 - Irmão preto com filhos pretos ou sem filhos
+            NoRN *irmao = (p == pai->dir) ? pai->esq : pai->dir;
+
+            NoRN *sobrinhoPerto, *sobrinhoLonge;
+            sobrinhoPerto = sobrinhoLonge = nullptr;
+
+            if (irmao != nullptr && irmao == irmao->pai->dir){
+                sobrinhoPerto = irmao->esq;
+                sobrinhoLonge = irmao->dir;
+            }
+            else if (irmao != nullptr && irmao == irmao->pai->esq) {
+                sobrinhoPerto = irmao->dir;
+                sobrinhoLonge = irmao->esq;
+            }
+
+            //Se o irmão é null, o pai vira duplo preto
+            if (irmao == nullptr){
+                pai->ehDuploPreto = true;
+                delete p;
+                p = pai;
+            }
+
+            else if (irmao->cor == 'P' && (irmao->dir == nullptr || irmao->dir->cor == 'P') && (irmao->esq == nullptr || irmao->esq->cor == 'P')) {
+                //Irmão fica vermelho
+                irmao->cor = 'V';
+                pai->ehDuploPreto = true;
+                //Se o pai é vermelho, fica preto, se já é preto fica duplo preto
+                if (pai->cor == 'V') {
+                    pai->cor = 'P';
+                    pai->ehDuploPreto = false;
+                    break;
+                }
+                p = pai;
+            }
+            //Caso 2.2 - Irmão vermelho
+            else if (irmao->cor == 'V') {
+                //Troca a cor do pai com o irmão
+                char corTroca;
+                corTroca = pai->cor;
+                pai->cor = irmao->cor;
+                irmao->cor = corTroca;
+                //Roda na direção do duplo preto
+                //Roda pra esquerda
+                if (p == pai->esq) {
+
+                    //Direita do pai recebe a subarvore esquerda do irmao
+                    pai->dir = irmao->esq;
+
+                    //Muda o pai do antigo no da subarvore esquerda do irmao
+                    if (irmao->esq != nullptr)
+                        irmao->esq->pai = pai;
+                    irmao->esq = pai;
+
+                    //O irmao vai virar o novo pai, e deixa de ser irmão do no p
+                    if (pai->pai != nullptr) {
+                        if (pai->pai->esq == pai)
+                            pai->pai->esq = irmao;
+                        else
+                            pai->pai->dir = irmao;
+                    }
+                    irmao->pai = pai->pai;
+                    pai->pai = irmao;
+
+                    //Acha o novo irmão do no p
+                    irmao = pai->dir;
+                }
+                //Roda pra direita
+                else if (p == pai->dir) {
+                    //Esquerda do pai recebe a subarvore direita do irmao
+                    pai->esq = irmao->dir;
+
+                    //Muda o pai do antigo no da subarvore esquerda do irmao
+                    if (irmao->dir != nullptr)
+                        irmao->dir->pai = pai;
+                    irmao->dir = pai;
+
+                    //O irmao vai virar o novo pai, e deixa de ser irmão do no p
+                    if (pai->esq != nullptr) {
+                        if (pai->pai->dir == pai)
+                            pai->pai->dir = irmao;
+                        else
+                            pai->pai->esq = irmao;
+                    }
+                    irmao->pai = pai->pai;
+                    pai->pai = irmao;
+
+                    //Acha o novo irmão do no p
+                    irmao = pai->esq;
+                }
+            }
+            //Caso 2.3 irmão preto e sobrinho perto vermelho e sobrinho longe preto ou null
+            else if (irmao->cor == 'P' && (sobrinhoPerto != nullptr && sobrinhoPerto->cor == 'V') && (sobrinhoLonge == nullptr || sobrinhoLonge->cor == 'P')) {
+                pai = irmao->pai;
+
+                //Troca a cor do irmão com o sobrinho mais próximo
+                char corTroca = irmao->cor;
+                irmao->cor = sobrinhoPerto->cor;
+                sobrinhoPerto->cor = corTroca;
+
+                //Rotaciona contra o sentido do DP, usando o irmão como eixo
+                if (irmao == pai->dir) {
+                    irmao->esq = sobrinhoPerto->dir;
+                    if (sobrinhoPerto->dir != nullptr)
+                        sobrinhoPerto->dir->pai = irmao;
+                    sobrinhoPerto->dir = irmao;
+                    pai->dir = sobrinhoPerto;
+                    irmao->pai = sobrinhoPerto;
+                    sobrinhoPerto->pai = pai;
+                }
+                else if (irmao == pai->esq) {
+                    irmao->dir = sobrinhoPerto->esq;
+                    if (sobrinhoPerto->esq != nullptr)
+                        sobrinhoPerto->esq->pai = irmao;
+                    sobrinhoPerto->esq = irmao;
+                    pai->esq = sobrinhoPerto;
+                    irmao->pai = sobrinhoPerto;
+                    sobrinhoPerto->pai = pai;
+                }
+            }
+            //Caso 2.4
+            else if (irmao->cor == 'P' && (sobrinhoLonge != nullptr && sobrinhoLonge->cor == 'V') && (sobrinhoPerto == nullptr || sobrinhoPerto->cor == 'P')) {
+                char corTroca;
+                corTroca = pai->cor;
+                pai->cor = irmao->cor;
+                irmao->cor = corTroca;
+                //Roda na direção do duplopreto
+                if (p == pai->esq) {
+                    pai->dir = irmao->esq;
+                    if (irmao->esq != nullptr)
+                        irmao->esq->pai = pai;
+                    irmao->esq = pai;
+                    if (pai->pai != nullptr) {
+                        if (pai == pai->pai->esq)
+                            pai->pai->esq = irmao;
+                        else
+                            pai->pai->dir = irmao;
+                    }
+                    irmao->pai = pai->pai;
+                    pai->pai = irmao;
+                    sobrinhoLonge->cor = 'P';
+                    break;
+                }
+                else if (p == pai->dir) {
+                    pai->esq = irmao->dir;
+                    if (irmao->dir != nullptr)
+                        irmao->dir->pai = pai;
+                    irmao->dir = pai;
+                    if (pai->pai != nullptr) {
+                        if (pai == pai->pai->esq)
+                            pai->pai->esq = irmao;
+                        else
+                            pai->pai->dir = irmao;
+                    }
+                    irmao->pai = pai->pai;
+                    pai->pai = irmao;
+                    sobrinhoLonge->cor = 'P';
+                    break;
+                }
+            }
+        }
+    }
 }
 
 /* O(log n) */

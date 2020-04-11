@@ -42,6 +42,7 @@ class NoRN {
         char cor;
         int quantNosSubArvEsq;
         int quantNosSubArvDir;
+        bool ehDuploPreto;
         NoRN* esq;
         NoRN* dir;
         NoRN* pai;

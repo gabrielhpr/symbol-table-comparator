@@ -52,9 +52,9 @@ int main() {
         //teste++;
         //if(teste == 3) break;
     }
-    ts.exibeTS();
+    //ts.exibeTS();
 
-    /*
+    
     string command = "";
 
     while(command != "stop") { 
@@ -70,7 +70,7 @@ int main() {
         //Item t = ts.devolve("Luís");
         //cout << t << endl;
     }
-    */
+    
     
 
 
