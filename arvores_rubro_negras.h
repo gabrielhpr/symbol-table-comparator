@@ -1,10 +1,8 @@
 #ifndef TS_ARVORES_RUBRO_NEGRAS_H
 #define TS_ARVORES_RUBRO_NEGRAS_H
-
 #include <iostream>
 #include "estruturas.h"
 using namespace std;
-
 
 template <class par>
 class TSArvoresRubroNegras { 
@@ -22,13 +20,19 @@ class TSArvoresRubroNegras {
         /*Métodos da TS*/
         void insere(Chave chave, Item valor);
         Item devolve(Chave chave);
-        NoRN* removeUtilRecur(NoRN* q, Chave chave, bool& removeu);
         void remove(Chave chave);
         int rank(Chave chave);
         Chave seleciona(int k); 
 
+        //Atualiza informações dos filhos dos nós - utilizado pelas rotações
+        void atualizaInfQuantFilhosDosNos(NoRN* no1, NoRN* no2, char direction);
+
+        //Busca a chave
+        NoRN* buscaAChave(NoRN* p, bool& achou);
+
         //Método utilizado pelo destructor
         void destroiArvoreRubroNegra(NoRN* q);
+
         void exibeTSUtilRecur(NoRN* q);
         void exibeTS(); 
 };
@@ -39,12 +43,6 @@ TSArvoresRubroNegras<par> :: TSArvoresRubroNegras() {
     raiz = nullptr;
 }
 
-template <class par>
-TSArvoresRubroNegras<par> :: ~TSArvoresRubroNegras() {
-    //Executar em pós-ordem
-    destroiArvoreRubroNegra(raiz);
-}
-
 template <class par> 
 void TSArvoresRubroNegras<par> :: destroiArvoreRubroNegra(NoRN* q) {
     if(q != nullptr) {
@@ -53,6 +51,45 @@ void TSArvoresRubroNegras<par> :: destroiArvoreRubroNegra(NoRN* q) {
         delete q;
     }
 }
+
+template <class par>
+TSArvoresRubroNegras<par> :: ~TSArvoresRubroNegras() {
+    //Executar em pós-ordem
+    destroiArvoreRubroNegra(raiz);
+}
+
+template <class par>
+void TSArvoresRubroNegras<par> :: atualizaInfQuantFilhosDosNos(NoRN* no1, NoRN* no2, char direction) {
+    //Atualiza a quantidade de filhos de cada nó
+    //Esquerda
+    if(direction == 'e') {
+        no1->quantNosSubArvDir = no2->quantNosSubArvEsq;
+        no2->quantNosSubArvEsq += 1 + no1->quantNosSubArvEsq;
+    }
+    //Direita
+    else {
+        no1->quantNosSubArvEsq = no2->quantNosSubArvDir;
+        no2->quantNosSubArvDir += 1 + no1->quantNosSubArvDir;
+    }
+}
+
+template <class par>
+NoRN* TSArvoresRubroNegras<par> :: buscaAChave(NoRN* p, bool& achou) {
+    //Busca
+    while(!achou) {
+        if(chave < p->chave && p->esq != nullptr) 
+            p = p->esq; 
+        else if(chave < p->chave && p->esq == nullptr) 
+            achou = true;
+        else if(chave > p->chave && p->dir != nullptr) 
+            p = p->dir;
+        else if(chave > p->chave && p->dir == nullptr) 
+            achou = true;
+        else 
+            achou = true;
+    }
+    return p;
+} 
 
 template <class par>
 NoRN* TSArvoresRubroNegras<par> :: criaNo(Chave chave, Item valor) {
@@ -85,28 +122,39 @@ void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
     NoRN *p = raiz;
 
     //Busca
-    while(!achou) {
-        if(chave < p->chave && p->esq != nullptr) {
-            p = p->esq; 
-        }
-        else if(chave < p->chave && p->esq == nullptr) {
-            achou = true;
-        }
-        else if(chave > p->chave && p->dir != nullptr) {
-            p = p->dir;
-        }
-        else if(chave > p->chave && p->dir == nullptr) {
-            achou = true;
-        }
-        else {
-            achou = true;
-        }
-    }
+    p = buscaAChave(p, achou);
 
     //Atualiza se já existe
     if(p->chave == chave) {
         p->valor++;
         return;
+    }
+    //Se não existe, refazemos a busca atualizando a quantidade de nós das subárvores
+    else {
+        bool achou = false;
+        NoRN *p = raiz;
+
+        //Busca
+        while(!achou) {
+            if(chave < p->chave && p->esq != nullptr) {
+                p->quantNosSubArvEsq++;
+                p = p->esq; 
+            }
+            else if(chave < p->chave && p->esq == nullptr) {
+                p->quantNosSubArvEsq++;
+                achou = true;
+            }
+            else if(chave > p->chave && p->dir != nullptr) {
+                p->quantNosSubArvDir++;
+                p = p->dir;
+            }
+            else if(chave > p->chave && p->dir == nullptr) {
+                p->quantNosSubArvDir++;
+                achou = true;
+            }
+            else 
+                achou = true;
+        }
     }
 
     //Cria o novo nó
@@ -115,20 +163,17 @@ void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
     n++;
 
     //Insere o novo nó vermelho
-    if(novo->chave > p->chave) {
+    if(novo->chave > p->chave) 
         p->dir = novo;
-    }
-    else {
+    else 
         p->esq = novo;
-    }
 
     NoRN* filho = novo;
 
     while(p != nullptr) {
         //Caso pai preto, não altera nada
-        if(p->cor == 'P') {
-            break;
-        }
+        if(p->cor == 'P') break;
+
         //Caso sem avô, troca a cor do pai
         NoRN* avo = p->pai;
         if(avo == nullptr) {
@@ -147,6 +192,9 @@ void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
         //Caso tio preto ou null
         else {
             if(p == avo->esq && filho == p->dir) {
+                //Atualiza a quantidade de filhos de cada nó
+                atualizaInfQuantFilhosDosNos(p, filho, 'e');
+
                 //Rotação pra esquerda, p sendo o eixo
                 p->dir = filho->esq;
                 if(filho->esq != nullptr) filho->esq->pai = p;
@@ -159,6 +207,9 @@ void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
                 filho = filho->esq;
             }
             else if(p == avo->dir && filho == p->esq) {
+                //Atualiza a quantidade de filhos de cada nó
+                atualizaInfQuantFilhosDosNos(p, filho, 'd');
+            
                 //Rotação pra direita, p sendo o eixo
                 p->esq = filho->dir;
                 if(filho->dir != nullptr) filho->dir->pai = p;
@@ -171,6 +222,9 @@ void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
                 filho = filho->dir;
             }
             else if(p == avo->esq && filho == p->esq) {
+                //Atualiza a quantidade de filhos de cada nó
+                atualizaInfQuantFilhosDosNos(avo, p, 'd');
+
                 //Rotação pra direita
                 if(avo->pai != nullptr) {
                     if(avo->pai->esq == avo) avo->pai->esq = p;
@@ -190,6 +244,10 @@ void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
                 }
             }
             else if(p == avo->dir && filho == p->dir) {
+
+                //Atualiza a quantidade de filhos de cada nó
+                atualizaInfQuantFilhosDosNos(avo, p, 'e');
+
                 //Rotação pra esquerda
                 if(avo->pai != nullptr) {
                     if(avo->pai->esq == avo) avo->pai->esq = p;
@@ -226,19 +284,12 @@ Item TSArvoresRubroNegras<par> :: devolve(Chave chave) {
             valor = aux->valor;
             break;
         }
-        else if(aux->chave > chave) {
+        else if(aux->chave > chave) 
             aux = aux->esq;
-        }
-        else {
+        else 
             aux = aux->dir;
-        }
     }
     return valor;
-}
-
-template <class par>
-NoRN* TSArvoresRubroNegras<par> :: removeUtilRecur(NoRN* q, Chave chave, bool& removeu) {
-
 }
 
 /* O(log n) */
@@ -255,7 +306,6 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
 
     //Caso só exista a raiz
     if(raiz->chave == chave && raiz->dir == nullptr && raiz->esq == nullptr) {
-        cout << "remover a raiz folha" << endl;
         delete p;
         raiz = nullptr;
         return;
@@ -264,38 +314,60 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
     //Procura a chave
     bool achou = 0;
     while(p != nullptr && !achou) {
-        if(chave < p->chave) {
+        if(chave < p->chave) 
             p = p->esq;
-        }
-        else if(chave > p->chave) {
+        else if(chave > p->chave) 
             p = p->dir;
-        }
-        else achou = 1;
+        else 
+            achou = 1;
     }
 
     //Não achou o nó a ser removido
     if(achou == 0) return;
+    //Achou o nó, atualiza os nós do percurso até ele
+    else {
+        //Procura a chave
+        bool achou = 0;
+        while(p != nullptr && !achou) {
+            if(chave < p->chave) {
+                p->quantNosSubArvEsq--;
+                p = p->esq;
+            }
+            else if(chave > p->chave) {
+                p->quantNosSubArvDir--;
+                p = p->dir;
+            }
+            else 
+                achou = 1;
+        }   
+    }
     
     NoRN* subs;
     //Enquanto p não é uma folha
     while( !(p->esq == nullptr && p->dir == nullptr) ) {
         //Pega o menor da sub árvore direita, ou o maior da sub árvore esquerda
         if (p->dir != nullptr) {
+            p->quantNosSubArvDir--;
             subs = p->dir;
-            while (subs->esq != nullptr)
+            while (subs->esq != nullptr) {
+                subs->quantNosSubArvEsq--;
                 subs = subs->esq;
+            }
         }
         else {
+            p->quantNosSubArvEsq--;
             subs = p->esq;
-            while (subs->dir != nullptr)
+            while (subs->dir != nullptr) {
+                subs->quantNosSubArvDir--;
                 subs = subs->dir;
+            }
         }
         //Substitue o p com o subs
         p->chave = subs->chave;
         p->valor = subs->valor;
         p = subs;
     }
-    cout << "subs " << subs << endl;
+
     //Folha vermelha, só remover
     if(p->cor == 'V') {
         if(p == p->pai->esq) p->pai->esq = nullptr;
@@ -330,7 +402,6 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                 sobrinhoPerto = irmao->dir;
                 sobrinhoLonge = irmao->esq;
             }
-            /******************/
 
             //Se o irmão é null, o pai vira duplo preto
             if (irmao == nullptr){
@@ -339,7 +410,8 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                     delete p;
                     removeu = true;
                 }
-                else p->ehDuploPreto = false;
+                else 
+                    p->ehDuploPreto = false;
                 p = pai;
             }
 
@@ -372,10 +444,12 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                 //Roda na direção do duplo preto
                 //Roda pra esquerda
                 if (p == pai->esq) {
+                    //Atualiza a quantidade de filhos de cada nó
+                    atualizaInfQuantFilhosDosNos(pai, pai->dir, 'e');
 
                     //Direita do pai recebe a subarvore esquerda do irmao
-                    pai->dir = irmao->esq;
-
+                    pai->dir = irmao->esq;  
+                    
                     //Muda o pai do antigo no da subarvore esquerda do irmao
                     if (irmao->esq != nullptr)
                         irmao->esq->pai = pai;
@@ -396,6 +470,10 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                 }
                 //Roda pra direita
                 else if (p == pai->dir) {
+
+                    //Atualiza a quantidade de filhos de cada nó
+                    atualizaInfQuantFilhosDosNos(pai, pai->esq, 'd');
+
                     //Esquerda do pai recebe a subarvore direita do irmao
                     pai->esq = irmao->dir;
 
@@ -421,16 +499,16 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
             //Caso 2.3 irmão preto e sobrinho perto vermelho e sobrinho longe preto ou null
             else if (irmao->cor == 'P' && (sobrinhoPerto != nullptr && sobrinhoPerto->cor == 'V') && (sobrinhoLonge == nullptr || sobrinhoLonge->cor == 'P')) {
                 pai = irmao->pai;
-                cout << "caso 2.3" << endl;
                 //Troca a cor do irmão com o sobrinho mais próximo
                 irmao->cor = 'V';
                 sobrinhoPerto->cor = 'P';
 
-                
-
                 //Rotaciona contra o sentido do DP, usando o irmão como eixo
                 if (irmao == pai->dir) {
-                    cout << "entrou no irmao pai dir" << endl;
+
+                    //Atualiza a quantidade de filhos de cada nó
+                    atualizaInfQuantFilhosDosNos(irmao, sobrinhoPerto, 'd');
+
                     irmao->esq = sobrinhoPerto->dir;
                     if (sobrinhoPerto->dir != nullptr)
                         sobrinhoPerto->dir->pai = irmao;
@@ -440,7 +518,10 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                     sobrinhoPerto->pai = pai;
                 }
                 else if (irmao == pai->esq) {
-                    cout << "entrou no irmao pai esq" << endl;
+
+                    //Atualiza a quantidade de filhos de cada nó
+                    atualizaInfQuantFilhosDosNos(irmao, sobrinhoPerto, 'e');
+
                     irmao->dir = sobrinhoPerto->esq;
                     if (sobrinhoPerto->esq != nullptr)
                         sobrinhoPerto->esq->pai = irmao;
@@ -452,19 +533,17 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
             }
             //Caso 2.4
             else if (irmao->cor == 'P' && (sobrinhoLonge != nullptr && sobrinhoLonge->cor == 'V') && (sobrinhoPerto == nullptr || sobrinhoPerto->cor == 'P' || sobrinhoLonge->cor == 'V')) {
-                cout << "caso 2.4" << endl;
                 char corTroca;
                 corTroca = pai->cor;
                 pai->cor = irmao->cor;
                 irmao->cor = corTroca;
 
-                cout << "pai chave " << pai->chave << endl;
-                cout << "irmao chave " << irmao->chave << endl;
-                cout << "sobrinhoPerto chave " << sobrinhoPerto->chave << endl;
-
-                //Roda na direção do duplopreto
+                //Roda pra esquerda - na direção do duplopreto
                 if (p == pai->esq) {
-                    cout << "p pai esq" << endl;
+
+                    //Atualiza a quantidade de filhos de cada nó
+                    atualizaInfQuantFilhosDosNos(pai, irmao, 'e');
+
                     pai->dir = irmao->esq;
                     if (irmao->esq != nullptr)
                         irmao->esq->pai = pai;
@@ -491,8 +570,12 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                     else p->ehDuploPreto = false;
                     break;
                 }
+                //Roda pra direita
                 else if (p == pai->dir) {
-                    cout << "p pai dir" << endl;
+
+                    //Atualiza a quantidade de filhos de cada nó
+                    atualizaInfQuantFilhosDosNos(pai, irmao, 'd');
+
                     pai->esq = irmao->dir;
                     if (irmao->dir != nullptr)
                         irmao->dir->pai = pai;
@@ -533,31 +616,29 @@ int TSArvoresRubroNegras<par> :: rank(Chave chave) {
     }
     else {
         NoRN* aux;
-        if(chave < raiz->chave) {
+        if(chave < raiz->chave) 
             aux = raiz->esq;
-        }
         else {
-            aux = raiz->dir;
             n_elements += raiz->quantNosSubArvEsq + 1;
+            aux = raiz->dir;
         }
         while(aux != nullptr) {
             if(aux->chave == chave) {
                 n_elements += aux->quantNosSubArvEsq;
                 break;
             } 
-            else if(chave < aux->chave) {
+            else if(chave < aux->chave) 
                 aux = aux->esq;
-            }
             else {
-                aux = aux->dir;
                 n_elements += aux->quantNosSubArvEsq+1;
+                aux = aux->dir;
             }
         }
     }
     return n_elements;
 }
 
-/* O(n) */
+/* O(logn * logn) */
 template <class par>
 Chave TSArvoresRubroNegras<par> :: seleciona(int k) {
     Chave chave = "";
@@ -569,12 +650,10 @@ Chave TSArvoresRubroNegras<par> :: seleciona(int k) {
             chave = aux->chave;
             break;
         }
-        else if(k < r) {
+        else if(k < r) 
             aux = aux->esq;
-        }
-        else {
+        else 
             aux = aux->dir;
-        }
     }
 
     return chave;
@@ -585,7 +664,8 @@ void TSArvoresRubroNegras<par> :: exibeTSUtilRecur(NoRN* q) {
     if(q != nullptr) {
         exibeTSUtilRecur(q->esq);
         cout << "Chave: " << q->chave << ", Valor: " << q->valor << ", Cor: "<< q->cor
-        << " ,fesq: " << q->esq << ", fdir: " << q->dir << endl;
+        << " ,fesq: " << q->esq << ", fdir: " << q->dir << "quantEsq: " << q->quantNosSubArvEsq
+        << ", quantDir: " << q->quantNosSubArvDir << endl;
         exibeTSUtilRecur(q->dir);
     }
 }
@@ -599,5 +679,5 @@ void TSArvoresRubroNegras<par> :: exibeTS() {
     exibeTSUtilRecur(raiz);
     cout << n << endl;
 }
-
 #endif
+//Tinha 697 linhas

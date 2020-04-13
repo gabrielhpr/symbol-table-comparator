@@ -35,7 +35,7 @@ int main() {
     ifstream texto;
     string palavra;
 
-    texto.open("holy_bible.txt", ios::in);
+    texto.open("simple.txt", ios::in);
     int teste = 0;
 
     while(texto >> palavra) {
@@ -43,6 +43,7 @@ int main() {
     }
     
     string command = "";
+    string str;
 
     while(command != "stop") { 
         cin >> command;
@@ -50,15 +51,19 @@ int main() {
             ts.exibeTS();
         else if(command == "r") {
             cout << "quem ?" << endl;
-            string str;
             cin >> str;
             ts.remove(str);
         }
         else if(command == "i") {
             cout << "manda a chave: " << endl;
-            string str;
             cin >> str;
             ts.insere(str, 1);
+        }
+        else if(command == "rank") {
+            cout << "manda a chave: " << endl;
+            cin >> str;
+            int r = ts.rank(str);
+            cout << r << endl;
         }
         //Item t = ts.devolve("Luís");
         //cout << t << endl;

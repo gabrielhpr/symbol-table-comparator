@@ -226,8 +226,8 @@ int TSArvoreBuscaBinaria<par> :: rank(Chave chave) {
             aux = raiz->esq;
         }
         else {
-            aux = raiz->dir;
             n_elements += raiz->quantNosSubArvEsq + 1;
+            aux = raiz->dir;
         }
         while(aux != nullptr) {
             if(aux->chave == chave) {
@@ -238,8 +238,8 @@ int TSArvoreBuscaBinaria<par> :: rank(Chave chave) {
                 aux = aux->esq;
             }
             else {
-                aux = aux->dir;
                 n_elements += aux->quantNosSubArvEsq+1;
+                aux = aux->dir;
             }
         }
     }
