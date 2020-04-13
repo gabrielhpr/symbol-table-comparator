@@ -28,7 +28,7 @@ class TSArvoresRubroNegras {
         void atualizaInfQuantFilhosDosNos(NoRN* no1, NoRN* no2, char direction);
 
         //Busca a chave
-        NoRN* buscaAChave(NoRN* p, bool& achou);
+        NoRN* buscaAChave(NoRN* p, Chave chave, bool& achou);
 
         //Método utilizado pelo destructor
         void destroiArvoreRubroNegra(NoRN* q);
@@ -74,7 +74,7 @@ void TSArvoresRubroNegras<par> :: atualizaInfQuantFilhosDosNos(NoRN* no1, NoRN* 
 }
 
 template <class par>
-NoRN* TSArvoresRubroNegras<par> :: buscaAChave(NoRN* p, bool& achou) {
+NoRN* TSArvoresRubroNegras<par> :: buscaAChave(NoRN* p, Chave chave, bool& achou) {
     //Busca
     while(!achou) {
         if(chave < p->chave && p->esq != nullptr) 
@@ -122,7 +122,7 @@ void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
     NoRN *p = raiz;
 
     //Busca
-    p = buscaAChave(p, achou);
+    p = buscaAChave(p, chave , achou);
 
     //Atualiza se já existe
     if(p->chave == chave) {

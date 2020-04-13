@@ -7,6 +7,7 @@
 #include "arvore_busca_binaria.h"
 #include "treaps.h"
 #include "arvores_rubro_negras.h"
+#include "arvores_23.h"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ typedef struct par par;
 
 int main() {
 
-    TSArvoresRubroNegras <par> ts;
+    TSArvore23 <par> ts;
 
     ifstream texto;
     string palavra;

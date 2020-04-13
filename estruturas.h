@@ -48,9 +48,22 @@ class NoRN {
         NoRN* pai;
 };
 
+class No23 {
+    public:
+        Chave chave1, chave2;
+        Item valor1, valor2;
+        int quantNosSubArvEsq = 0;
+        int quantNosSubArvDir = 0;
+        No23 *ap1;
+        No23 *ap2;
+        No23 *ap3;
+        bool doisNo;
+        bool ehFolha();
+};
 
-
-
-
-
+bool No23 :: ehFolha() {
+    //Retorna se o Nó é uma folha ou não
+    return (ap1 == nullptr && ap2 == nullptr && ap3 == nullptr);
+}
+        
 #endif
