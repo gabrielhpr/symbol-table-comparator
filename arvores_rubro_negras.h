@@ -307,6 +307,7 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
     //Caso só exista a raiz
     if(raiz->chave == chave && raiz->dir == nullptr && raiz->esq == nullptr) {
         delete p;
+        n--;
         raiz = nullptr;
         return;
     }
@@ -373,6 +374,7 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
         if(p == p->pai->esq) p->pai->esq = nullptr;
         else p->pai->dir = nullptr;     
         delete p;
+        n--;
     }
     //Folha preta
     else if (p->cor == 'P') {
@@ -383,7 +385,10 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
             if (p == raiz) {
                 p->cor = 'P';
                 //Deleta o p
-                if(removeu == false) delete p;
+                if(removeu == false) {
+                    delete p;
+                    n--;
+                }
                 else p->ehDuploPreto = false;
                 break;
             }
@@ -408,6 +413,7 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                 pai->ehDuploPreto = true;
                 if(removeu == false) { 
                     delete p;
+                    n--;
                     removeu = true;
                 }
                 else 
@@ -427,6 +433,7 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                         if(p == pai->esq) pai->esq = nullptr;
                         else pai->dir = nullptr;
                         delete p;
+                        n--;
                         removeu = true;
                     }
                     break;
@@ -566,6 +573,7 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                         if(p == p->pai->esq) p->pai->esq = nullptr;
                         else pai->dir = nullptr;
                         delete p;
+                        n--;
                     }
                     else p->ehDuploPreto = false;
                     break;
@@ -597,6 +605,7 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
                         if(p == p->pai->esq) pai->esq = nullptr;
                         else pai->dir = nullptr;
                         delete p;
+                        n--;
                     }
                     else p->ehDuploPreto = false;
                     break;

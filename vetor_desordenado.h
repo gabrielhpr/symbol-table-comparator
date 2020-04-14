@@ -140,6 +140,7 @@ void TSVetorDesordenado<par> :: exibeTS() {
     for (int i = 0; i < n; i++) {
         cout << "Chave: " << vd[i].chave << ", Valor: " << vd[i].valor << endl;
     }
+    cout << n << endl;
 }
 
 #endif

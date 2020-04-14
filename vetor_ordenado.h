@@ -145,6 +145,7 @@ void TSVetorOrdenado<par> :: exibeTS() {
     for (int i = 0; i < n; i++) {
         cout << "Chave: " << vo[i].chave << ", Valor: " << vo[i].valor << endl;
     }
+    cout << n << endl;
 }
 
 

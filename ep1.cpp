@@ -31,12 +31,12 @@ typedef struct par par;
 
 int main() {
 
-    TSArvore23 <par> ts;
+    TSArvoresRubroNegras <par> ts;
 
     ifstream texto;
     string palavra;
 
-    texto.open("simple.txt", ios::in);
+    texto.open("ipsum.txt", ios::in);
     int teste = 0;
 
     while(texto >> palavra) {
