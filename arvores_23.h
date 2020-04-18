@@ -1,6 +1,9 @@
 #ifndef TS_ARVORE_23_H
 #define TS_ARVORE_23_H
 
+//Debug
+#define debug(args...) fprintf(stderr, args)
+
 #include <iostream>
 #include "estruturas.h"
 using namespace std;
@@ -70,157 +73,169 @@ void TSArvore23<par> :: constroiDoisNo(No23* novo, Chave chave, Item valor) {
 }
 
 template <class par>
-No23* TSArvore23<par> :: put23(No23 *raiz, Chave chave, Item valor, bool &cresceu) {
-    if (raiz == nullptr){
-        No23 *raiz = new No23;
-        raiz->chave1 = chave;
-        raiz->valor1 = valor;
-        raiz->doisNo = true;
+No23* TSArvore23<par> :: put23(No23 *raizSub, Chave chave, Item valor, bool &cresceu) {
+    //debug("entrou no put23 \n");
+    //Árvore vazia
+    if (raizSub == nullptr){
+        //debug("raiz nula \n");
+        No23 *raizSub = new No23;
+        constroiDoisNo(raizSub, chave, valor);
         cresceu = true;
-        return raiz;
+        return raizSub;
     }
-    if (raiz->ehFolha()){
+    if (raizSub->ehFolha()) {
+        //debug("é folha \n");
         //A raiz é folha
-        if (raiz->doisNo){
+        if (raizSub->doisNo) {
+            //debug("folha dois no \n");
             //Insere na célula que é 2-Nó, transformando ela em uma 3-Nó
-            if (raiz->chave1 > chave){
-                raiz->chave2 = raiz->chave1;
-                raiz->valor2 = raiz->valor1;
-                raiz->chave1 = chave;
-                raiz->valor1 = valor;
+            if (raizSub->chave1 > chave){
+                raizSub->chave2 = raizSub->chave1;
+                raizSub->valor2 = raizSub->valor1;
+                raizSub->chave1 = chave;
+                raizSub->valor1 = valor;
             }
-            else{
-                raiz->chave2 = chave;
-                raiz->valor2 = valor;
+            else {
+                raizSub->chave2 = chave;
+                raizSub->valor2 = valor;
             }
-            raiz->doisNo = false;
+            raizSub->doisNo = false;
             cresceu = false;
-            return raiz;
+            return raizSub;
         }
-        else{
-            //Raiz é 3-Nós, ou seja, vai "explodir"
-            No23 *meio = new No23, *maior = new No23;
+        else {
+            //debug("folha três nó \n");
+            //raizSub é 3-Nós, ou seja, vai "explodir"
+            No23 *meio = new No23;
+            No23 *maior = new No23;
+
             Chave menorChave, maiorChave, meioChave;
             Item menorValor, maiorValor, meioValor;
-            if (chave > raiz->chave2){
+            if (chave > raizSub->chave2){
                 maiorChave = chave;
                 maiorValor = valor;
-                meioChave = raiz->chave2;
-                meioValor = raiz->valor2;
-                menorChave = raiz->chave1;
-                menorValor = raiz->valor1;
+                meioChave = raizSub->chave2;
+                meioValor = raizSub->valor2;
+                menorChave = raizSub->chave1;
+                menorValor = raizSub->valor1;
             }
-            else if (chave < raiz->chave1){
-                maiorChave = raiz->chave2;
-                maiorValor = raiz->valor2;
-                meioChave = raiz->chave1;
-                meioValor = raiz->valor1;
+            else if (chave < raizSub->chave1){
+                maiorChave = raizSub->chave2;
+                maiorValor = raizSub->valor2;
+                meioChave = raizSub->chave1;
+                meioValor = raizSub->valor1;
                 menorChave = chave;
                 menorValor = valor;
             }
             else{
-                maiorChave = raiz->chave2;
-                maiorValor = raiz->valor2;
+                maiorChave = raizSub->chave2;
+                maiorValor = raizSub->valor2;
                 meioChave = chave;
                 meioValor = valor;
-                menorChave = raiz->chave1;
-                menorValor = raiz->valor1;
+                menorChave = raizSub->chave1;
+                menorValor = raizSub->valor1;
             }
             constroiDoisNo(meio, meioChave, meioValor);
-            meio->ap1 = raiz;
+            meio->ap1 = raizSub;
             meio->ap2 = maior;
             constroiDoisNo(maior, maiorChave, maiorValor);
-            constroiDoisNo(raiz, menorChave, menorValor);
+            constroiDoisNo(raizSub, menorChave, menorValor);
             cresceu = true;
             return meio;
         }
     }
     else{
-        //A raiz não é folha
-        if (raiz->chave1 > chave){
+        //debug("não folha \n");
+        //A raizSub não é folha
+        if (chave < raizSub->chave1) {
+            //debug("chegou no primeiro caso \n");
+
             //Chama recursão para a esquerda do Nó
-            No23 *aux = put23(raiz->ap1, chave, valor, cresceu);
-            if (!cresceu){
-                return raiz;
-            }
-            else{
+            No23 *aux = put23(raizSub->ap1, chave, valor, cresceu);
+            if (!cresceu)
+                return raizSub;
+            else {
                 //Cresceu
-                if (raiz->doisNo){
-                    //Cresceu e vai transformar a raiz que é 2-Nó em uma 3-Nó
-                    raiz->chave2 = raiz->chave1;
-                    raiz->valor2 = raiz->valor1;
-                    raiz->chave1 = aux->chave1;
-                    raiz->valor1 = aux->valor1;
-                    raiz->ap3 = raiz->ap2;
-                    raiz->ap1 = aux->ap1;
-                    raiz->ap2 = aux->ap2;
+                if (raizSub->doisNo) {
+                    //Cresceu e vai transformar a raizSub que é 2-Nó em uma 3-Nó
+                    raizSub->chave2 = raizSub->chave1;
+                    raizSub->valor2 = raizSub->valor1;
+                    raizSub->chave1 = aux->chave1;
+                    raizSub->valor1 = aux->valor1;
+                    raizSub->ap3 = raizSub->ap2;
+                    raizSub->ap1 = aux->ap1;
+                    raizSub->ap2 = aux->ap2;
                     delete aux;
-                    raiz->doisNo = false;
+                    raizSub->doisNo = false;
                     cresceu = false;
-                    return raiz;
+                    return raizSub;
                 }
-                else{
-                    //Cresceu e a raiz é 3-Nó, ou seja, vai "explodir"
+                else {
+                    //Cresceu e a raizSub é 3-Nó, ou seja, vai "explodir"
                     No23 *maior = new No23;
-                    constroiDoisNo(maior, raiz->chave2, raiz->valor2);
-                    maior->ap1 = raiz->ap2;
-                    maior->ap2 = raiz->ap3;
-                    raiz->ap1 = aux;
-                    raiz->ap2 = maior;
-                    raiz->doisNo = true;
+                    constroiDoisNo(maior, raizSub->chave2, raizSub->valor2);
+                    maior->ap1 = raizSub->ap2;
+                    maior->ap2 = raizSub->ap3;
+                    raizSub->ap1 = aux;
+                    raizSub->ap2 = maior;
+                    raizSub->ap3 = nullptr;
+                    raizSub->doisNo = true;
                     cresceu = true;
-                    return raiz;
+                    return raizSub;
                 }
 
             }
         }
-        else if (!raiz->doisNo && raiz->chave2 < chave){
+        else if (!raizSub->doisNo && chave > raizSub->chave2) {
+            //debug("chegou no segundo caso \n");
+
             //Chama a recursão para a direita do Nó
-            No23 *aux = put23(raiz->ap3, chave, valor, cresceu);
-            if (!cresceu)
-                return raiz;
-            else{
-                //cresceu e a raiz é 3-Nó, ou seja, vai "explodir"
+            No23 *aux = put23(raizSub->ap3, chave, valor, cresceu);
+            if (!cresceu) 
+                return raizSub; 
+            else {
+                //cresceu e a raizSub é 3-Nó, ou seja, vai "explodir"
                 No23 *menor = new No23;
-                menor->chave1 = raiz->chave1;
-                menor->valor1 = raiz->valor1;
-                menor->ap1 = raiz->ap1;
-                menor->ap2 = raiz->ap2;
-                raiz->ap1 = menor;
-                raiz->ap2 = aux;
-                raiz->doisNo = true;
+                constroiDoisNo(menor, raizSub->chave1, raizSub->valor1);
+                menor->ap1 = raizSub->ap1;
+                menor->ap2 = raizSub->ap2;
+                raizSub->ap1 = menor;
+                raizSub->ap2 = aux;
+                raizSub->ap3 = nullptr;
+                raizSub->doisNo = true;
                 cresceu = true;
-                return raiz;
+                return raizSub;
             }
         }
-        else{
+        else {
+            //debug("chegou no terceiro caso \n");
             //Chama a recursão para o meio do Nó
-            No23 *aux = put23(raiz->ap2, chave, valor, cresceu);
-            if (!cresceu)
-                return raiz;
-            else{
+            No23 *aux = put23(raizSub->ap2, chave, valor, cresceu);
+            if (!cresceu) 
+                return raizSub;
+            else {
                 //cresceu
-                if (raiz->doisNo){
-                    //cresceu e vai transformar a raiz que é 2-Nó em uma 3-Nó
-                    raiz->chave2 = aux->chave1;
-                    raiz->valor2 = aux->valor1;
-                    raiz->ap2 = aux->ap1;
-                    raiz->ap3 = aux->ap2;
+                if (raizSub->doisNo) {
+                    //cresceu e vai transformar a raizSub que é 2-Nó em uma 3-Nó
+                    raizSub->chave2 = aux->chave1;
+                    raizSub->valor2 = aux->valor1;
+                    raizSub->ap2 = aux->ap1;
+                    raizSub->ap3 = aux->ap2;
                     delete aux;
-                    raiz->doisNo = false;
+                    raizSub->doisNo = false;
                     cresceu = false;
-                    return raiz;
+                    return raizSub;
                 }
-                else{
-                    //cresceu e a raiz é 3-Nó, ou seja, vai "explodir"
+                else {
+                    //cresceu e a raizSub é 3-Nó, ou seja, vai "explodir"
                     No23 *maior = new No23;
-                    constroiDoisNo(maior, raiz->chave2, raiz->valor2);
-                    maior->ap2 = raiz->ap3;
+                    constroiDoisNo(maior, raizSub->chave2, raizSub->valor2);
+                    maior->ap2 = raizSub->ap3;
                     maior->ap1 = aux->ap2;
-                    raiz->ap2 = aux->ap1;
-                    raiz->doisNo = false;
+                    raizSub->ap2 = aux->ap1;
+                    raizSub->doisNo = true;
                     aux->ap2 = maior;
-                    aux->ap1 = raiz;
+                    aux->ap1 = raizSub;
                     cresceu = true;
                     return aux;
                 }
@@ -233,15 +248,72 @@ No23* TSArvore23<par> :: put23(No23 *raiz, Chave chave, Item valor, bool &cresce
 template <class par>
 void TSArvore23<par> :: insere(Chave chave, Item valor) {
     bool cresceu = false;
-    raiz = put23(raiz, chave, valor, cresceu);
+    bool achou = false;
+
+    //Procura se a chave já existe O(log n)
+    No23* noAux = raiz;
+    while(noAux != nullptr && !achou) {   
+        if(chave == noAux->chave1) {
+            noAux->valor1 += 1;
+            achou = true;
+        }
+        else if(chave < noAux->chave1) 
+            noAux = noAux->ap1;
+        else if(chave > noAux->chave1) {
+            if(noAux->doisNo) 
+                noAux = noAux->ap2;
+            else {
+                if(chave == noAux->chave2) {
+                    noAux->valor2 += 1;
+                    achou = true;
+                }
+                else if(chave < noAux->chave2) 
+                    noAux = noAux->ap2;
+                else 
+                    noAux = noAux->ap3;
+            }
+        }
+    }
+    //Se a chave não existe, adiciona ela na árvore
+    if(!achou) {
+        raiz = put23(raiz, chave, valor, cresceu);
+        n++;
+    }
 }
 
 /*Retorna o valor da chave correspondente ou -1 se a chave não existe*/
 /* O(log n) */
 template <class par>
 Item TSArvore23<par> :: devolve(Chave chave) {
-    
-}
+    bool achou = false;
+    Item valor = -1;
+
+    //Procura se a chave já existe O(log n)
+    No23* noAux = raiz;
+    while(noAux != nullptr && !achou) {   
+        if(chave == noAux->chave1) {
+            valor = noAux->valor1;
+            achou = true;
+        }
+        else if(chave < noAux->chave1) 
+            noAux = noAux->ap1;
+        else if(chave > noAux->chave1) {
+            if(noAux->doisNo) 
+                noAux = noAux->ap2;
+            else {
+                if(chave == noAux->chave2) {
+                    valor = noAux->valor2;
+                    achou = true;
+                }
+                else if(chave < noAux->chave2) 
+                    noAux = noAux->ap2;
+                else 
+                    noAux = noAux->ap3;
+            }
+        }
+    }
+    return valor;
+} 
 
 template <class par>
 No23* TSArvore23<par> :: removeUtilRecur(No23* q, Chave chave, bool& removeu) {
@@ -271,15 +343,17 @@ template <class par>
 void TSArvore23<par> :: exibeTSUtilRecur(No23* q) {
     if(q != nullptr) {
         exibeTSUtilRecur(q->ap1);
-        cout << "Chave: " << q->chave1 << ", Valor: " << q->valor1
+        cout << "Chave-P: " << q->chave1 << ", Valor: " << q->valor1
         << " ,fap1: " << q->ap1 << ", fap2: " << q->ap2 << ", fap3: " << q->ap3 << ", 2no: "
         << q->doisNo << endl;
-        if(q->doisNo == false)
-            cout << "Chave: " << q->chave2 << ", Valor: " << q->valor2
+        exibeTSUtilRecur(q->ap2);
+        
+        if(q->doisNo == false) {
+            cout << "Chave-S: " << q->chave2 << ", Valor: " << q->valor2
             << " ,fap1: " << q->ap1 << ", fap2: " << q->ap2 << ", fap3: " << q->ap3 << ", 2no: "
             << q->doisNo << endl;
-        exibeTSUtilRecur(q->ap2);
-        exibeTSUtilRecur(q->ap3);
+            exibeTSUtilRecur(q->ap3);
+        }
     }
 }
 
@@ -287,7 +361,6 @@ template <class par>
 void TSArvore23<par> :: exibeTS() {
     exibeTSUtilRecur(raiz);
     cout << n << endl;
-
 }
 
 #endif

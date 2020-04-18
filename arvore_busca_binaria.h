@@ -173,7 +173,7 @@ NoABB* TSArvoreBuscaBinaria<par> :: removeUtilRecur(NoABB* q, Chave chave, bool&
         Item maxSubEsqItem;
         Chave chaveMaxSubEsq;
 
-        chaveMaxSubEsq = seleciona(rank(q)-1);
+        chaveMaxSubEsq = seleciona(rank(q->chave)-1);
         maxSubEsqItem = devolve(chaveMaxSubEsq);
         maxSubEsqNo = criaNo(chaveMaxSubEsq, maxSubEsqItem);
 
@@ -191,13 +191,13 @@ NoABB* TSArvoreBuscaBinaria<par> :: removeUtilRecur(NoABB* q, Chave chave, bool&
         removeu = true;
     }
     else if(q->chave > chave) {
-        q->esq = removeUtilRecur(q->esq, chave);
+        q->esq = removeUtilRecur(q->esq, chave, removeu);
         if(removeu == true) {
             q->quantNosSubArvEsq--;
         }
     }
     else {
-        q->dir = removeUtilRecur(q->dir, chave);
+        q->dir = removeUtilRecur(q->dir, chave, removeu);
         if(removeu == true) {
             q->quantNosSubArvDir--;
         }

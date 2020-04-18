@@ -31,18 +31,20 @@ typedef struct par par;
 
 int main() {
 
-    TSArvoresRubroNegras <par> ts;
+    TSArvore23 <par> ts;
 
     ifstream texto;
     string palavra;
 
-    texto.open("ipsum.txt", ios::in);
+    texto.open("holy_bible.txt", ios::in);
     int teste = 0;
 
     while(texto >> palavra) {
         ts.insere(palavra, 1);
     }
-    
+    cout << "done" << endl;
+    cout << ts.n << endl;
+
     string command = "";
     string str;
 
