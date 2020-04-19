@@ -8,6 +8,7 @@
 #include "treaps.h"
 #include "arvores_rubro_negras.h"
 #include "arvores_23.h"
+#include "tabelas_de_hashing.h"
 
 using namespace std;
 
@@ -31,20 +32,21 @@ typedef struct par par;
 
 int main() {
 
-    TSArvore23 <par> ts;
+    TSTabelasDeHashing <par> ts;
 
     ifstream texto;
     string palavra;
 
-    texto.open("holy_bible.txt", ios::in);
+    texto.open("meuTexto.txt", ios::in);
     int teste = 0;
 
     while(texto >> palavra) {
         ts.insere(palavra, 1);
     }
-    cout << "done" << endl;
-    cout << ts.n << endl;
-
+    return 0;
+    //cout << "done" << endl;
+    //cout << ts.n << endl;
+    
     string command = "";
     string str;
 
@@ -76,4 +78,5 @@ int main() {
 
 
     return 0;
+    
 }

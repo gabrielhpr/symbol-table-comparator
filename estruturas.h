@@ -65,5 +65,13 @@ bool No23 :: ehFolha() {
     //Retorna se o Nó é uma folha ou não
     return (ap1 == nullptr && ap2 == nullptr && ap3 == nullptr);
 }
+
+class CelulasHash {
+    public:
+        Chave chave;
+        Item valor;
+        CelulasHash* ant;
+        CelulasHash* prox;
+};
         
 #endif
