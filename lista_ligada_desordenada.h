@@ -2,15 +2,16 @@
 #define TS_LISTA_LIGADA_DESORDENADA_H
 
 #include <iostream>
+#include <fstream>
 #include "estruturas.h"
 using namespace std;
 
 
-template <class par>
-class TSListaLigadaDesordenada { 
+template <class Chave, class Valor>
+class listaDes { 
     public:
-        TSListaLigadaDesordenada();
-        ~TSListaLigadaDesordenada();
+        listaDes(string nome_arquivo);
+        ~listaDes();
 
         /*Métodos da TS*/
         void insere(Chave chave, Item valor);
@@ -28,15 +29,25 @@ class TSListaLigadaDesordenada {
         int n;//public
 };
 
-template <class par>
-TSListaLigadaDesordenada<par> :: TSListaLigadaDesordenada() {
+template <class Chave, class Valor>
+listaDes<Chave, Valor> :: listaDes(string nome_arquivo) {
     n = 0;
     cabeca_lld = new Celula;
     cabeca_lld->prox = nullptr;
+
+    ifstream texto;
+    string palavra;
+
+    texto.open(nome_arquivo, ios::in);
+
+    while(texto >> palavra) 
+        insere(palavra, 1);
+
+    texto.close();
 }
 
-template <class par>
-TSListaLigadaDesordenada<par> :: ~TSListaLigadaDesordenada() {
+template <class Chave, class Valor>
+listaDes<Chave, Valor> :: ~listaDes() {
     Celula* aux;
 
     for (aux = cabeca_lld; aux != nullptr;) {
@@ -47,8 +58,8 @@ TSListaLigadaDesordenada<par> :: ~TSListaLigadaDesordenada() {
 }
 
 /* O(n) */
-template <class par>
-void TSListaLigadaDesordenada<par> :: insere(Chave chave, Item valor) {
+template <class Chave, class Valor>
+void listaDes<Chave, Valor> :: insere(Chave chave, Item valor) {
     bool chaveExiste = false;
     Celula* aux;
     //Checa se a chave já pertence a lista
@@ -72,8 +83,8 @@ void TSListaLigadaDesordenada<par> :: insere(Chave chave, Item valor) {
 
 /*Retorna o valor da chave correspondente ou -1 se a chave não existe*/
 /* O(n) */
-template <class par>
-Item TSListaLigadaDesordenada<par> :: devolve(Chave chave) {
+template <class Chave, class Valor>
+Item listaDes<Chave, Valor> :: devolve(Chave chave) {
     Item valor = -1;
     bool achou_chave = false;
     Celula* aux;
@@ -88,8 +99,8 @@ Item TSListaLigadaDesordenada<par> :: devolve(Chave chave) {
 }
 
 /* O(n) */
-template <class par>
-void TSListaLigadaDesordenada<par> :: remove(Chave chave) {
+template <class Chave, class Valor>
+void listaDes<Chave, Valor> :: remove(Chave chave) {
     Celula *aux, *ant;
     ant = cabeca_lld;
 
@@ -105,8 +116,8 @@ void TSListaLigadaDesordenada<par> :: remove(Chave chave) {
 }
 
 /* O(n) */
-template <class par>
-int TSListaLigadaDesordenada<par> :: rank(Chave chave) {
+template <class Chave, class Valor>
+int listaDes<Chave, Valor> :: rank(Chave chave) {
     int n_elements = 0;
     Celula* aux;
 
@@ -117,8 +128,8 @@ int TSListaLigadaDesordenada<par> :: rank(Chave chave) {
 }
 
 /* O(n^2) */
-template <class par>
-Chave TSListaLigadaDesordenada<par> :: seleciona(int k) {
+template <class Chave, class Valor>
+Chave listaDes<Chave, Valor> :: seleciona(int k) {
     Chave chave = "";
     bool achei_chave = false;
     Celula* aux;
@@ -132,8 +143,8 @@ Chave TSListaLigadaDesordenada<par> :: seleciona(int k) {
     return chave;
 }
 
-template <class par>
-void TSListaLigadaDesordenada<par> :: exibeTS() {
+template <class Chave, class Valor>
+void listaDes<Chave, Valor> :: exibeTS() {
     Celula* aux;
     for (aux = cabeca_lld->prox; aux != nullptr; aux = aux->prox) {
         cout << "Chave: " << aux->chave << ", Valor: " << aux->valor << endl;

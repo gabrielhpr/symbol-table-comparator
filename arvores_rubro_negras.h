@@ -1,14 +1,15 @@
 #ifndef TS_ARVORES_RUBRO_NEGRAS_H
 #define TS_ARVORES_RUBRO_NEGRAS_H
 #include <iostream>
+#include <fstream>
 #include "estruturas.h"
 using namespace std;
 
-template <class par>
-class TSArvoresRubroNegras { 
+template <class Chave, class Valor>
+class arvoreRN { 
     public:
-        TSArvoresRubroNegras();
-        ~TSArvoresRubroNegras();
+        arvoreRN(string nome_arquivo);
+        ~arvoreRN();
 
         /*Árvore Rubro Negra*/
         NoRN* raiz;
@@ -37,14 +38,24 @@ class TSArvoresRubroNegras {
         void exibeTS(); 
 };
 
-template <class par>
-TSArvoresRubroNegras<par> :: TSArvoresRubroNegras() {
+template <class Chave, class Valor>
+arvoreRN<Chave, Valor> :: arvoreRN(string nome_arquivo) {
     n = 0;
     raiz = nullptr;
+
+    ifstream texto;
+    string palavra;
+
+    texto.open(nome_arquivo, ios::in);
+
+    while(texto >> palavra) 
+        insere(palavra, 1);
+
+    texto.close();
 }
 
-template <class par> 
-void TSArvoresRubroNegras<par> :: destroiArvoreRubroNegra(NoRN* q) {
+template <class Chave, class Valor> 
+void arvoreRN<Chave, Valor> :: destroiArvoreRubroNegra(NoRN* q) {
     if(q != nullptr) {
         destroiArvoreRubroNegra(q->esq);
         destroiArvoreRubroNegra(q->dir);
@@ -52,14 +63,14 @@ void TSArvoresRubroNegras<par> :: destroiArvoreRubroNegra(NoRN* q) {
     }
 }
 
-template <class par>
-TSArvoresRubroNegras<par> :: ~TSArvoresRubroNegras() {
+template <class Chave, class Valor>
+arvoreRN<Chave, Valor> :: ~arvoreRN() {
     //Executar em pós-ordem
     destroiArvoreRubroNegra(raiz);
 }
 
-template <class par>
-void TSArvoresRubroNegras<par> :: atualizaInfQuantFilhosDosNos(NoRN* no1, NoRN* no2, char direction) {
+template <class Chave, class Valor>
+void arvoreRN<Chave, Valor> :: atualizaInfQuantFilhosDosNos(NoRN* no1, NoRN* no2, char direction) {
     //Atualiza a quantidade de filhos de cada nó
     //Esquerda
     if(direction == 'e') {
@@ -73,8 +84,8 @@ void TSArvoresRubroNegras<par> :: atualizaInfQuantFilhosDosNos(NoRN* no1, NoRN* 
     }
 }
 
-template <class par>
-NoRN* TSArvoresRubroNegras<par> :: buscaAChave(NoRN* p, Chave chave, bool& achou) {
+template <class Chave, class Valor>
+NoRN* arvoreRN<Chave, Valor> :: buscaAChave(NoRN* p, Chave chave, bool& achou) {
     //Busca
     while(!achou) {
         if(chave < p->chave && p->esq != nullptr) 
@@ -91,8 +102,8 @@ NoRN* TSArvoresRubroNegras<par> :: buscaAChave(NoRN* p, Chave chave, bool& achou
     return p;
 } 
 
-template <class par>
-NoRN* TSArvoresRubroNegras<par> :: criaNo(Chave chave, Item valor) {
+template <class Chave, class Valor>
+NoRN* arvoreRN<Chave, Valor> :: criaNo(Chave chave, Item valor) {
     NoRN* novo = new NoRN;
     novo->chave = chave;
     novo->valor = valor;
@@ -109,8 +120,8 @@ NoRN* TSArvoresRubroNegras<par> :: criaNo(Chave chave, Item valor) {
 /* O(log n) */
 /*Atualizar o numero de elementos das subarvores por meio de uma busca em abb, e atualizar tbm
 durante as rotacoes, fazer isso no insere e no remove*/
-template <class par>
-void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
+template <class Chave, class Valor>
+void arvoreRN<Chave, Valor> :: insere(Chave chave, Item valor) {
     //Caso raiz nula
     if(raiz == nullptr) {
         raiz = criaNo(chave, valor);
@@ -272,8 +283,8 @@ void TSArvoresRubroNegras<par> :: insere(Chave chave, Item valor) {
 
 /*Retorna o valor da chave correspondente ou -1 se a chave não existe*/
 /* O(log n) */
-template <class par>
-Item TSArvoresRubroNegras<par> :: devolve(Chave chave) {
+template <class Chave, class Valor>
+Item arvoreRN<Chave, Valor> :: devolve(Chave chave) {
     Item valor = -1;
     NoRN* aux;
 
@@ -293,8 +304,8 @@ Item TSArvoresRubroNegras<par> :: devolve(Chave chave) {
 }
 
 /* O(log n) */
-template <class par>
-void TSArvoresRubroNegras<par> :: remove(Chave chave) {
+template <class Chave, class Valor>
+void arvoreRN<Chave, Valor> :: remove(Chave chave) {
     bool removeu = false;
     NoRN* p = raiz;
 
@@ -616,8 +627,8 @@ void TSArvoresRubroNegras<par> :: remove(Chave chave) {
 }
 
 /* O(log n) */
-template <class par>
-int TSArvoresRubroNegras<par> :: rank(Chave chave) {
+template <class Chave, class Valor>
+int arvoreRN<Chave, Valor> :: rank(Chave chave) {
     int n_elements = 0;
     int r;
     if(chave == raiz->chave) {
@@ -648,8 +659,8 @@ int TSArvoresRubroNegras<par> :: rank(Chave chave) {
 }
 
 /* O(logn * logn) */
-template <class par>
-Chave TSArvoresRubroNegras<par> :: seleciona(int k) {
+template <class Chave, class Valor>
+Chave arvoreRN<Chave, Valor> :: seleciona(int k) {
     Chave chave = "";
     int r;
     NoRN* aux = raiz;
@@ -668,8 +679,8 @@ Chave TSArvoresRubroNegras<par> :: seleciona(int k) {
     return chave;
 }
 
-template <class par>
-void TSArvoresRubroNegras<par> :: exibeTSUtilRecur(NoRN* q) {
+template <class Chave, class Valor>
+void arvoreRN<Chave, Valor> :: exibeTSUtilRecur(NoRN* q) {
     if(q != nullptr) {
         exibeTSUtilRecur(q->esq);
         cout << "Chave: " << q->chave << ", Valor: " << q->valor << ", Cor: "<< q->cor
@@ -679,8 +690,8 @@ void TSArvoresRubroNegras<par> :: exibeTSUtilRecur(NoRN* q) {
     }
 }
 
-template <class par>
-void TSArvoresRubroNegras<par> :: exibeTS() {
+template <class Chave, class Valor>
+void arvoreRN<Chave, Valor> :: exibeTS() {
     if(raiz == nullptr) {
         cout << "Não há elementos" << endl;
         return; 

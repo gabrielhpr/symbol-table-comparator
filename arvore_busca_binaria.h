@@ -2,15 +2,16 @@
 #define TS_ARVORE_BUSCA_BINARIA_H
 
 #include <iostream>
+#include <fstream>
 #include "estruturas.h"
 using namespace std;
 
 
-template <class par>
-class TSArvoreBuscaBinaria { 
+template <class Chave, class Valor>
+class arvoreBin { 
     public:
-        TSArvoreBuscaBinaria();
-        ~TSArvoreBuscaBinaria();
+        arvoreBin(string nome_arquivo);
+        ~arvoreBin();
 
         /*Árvore de Busca Binária*/
         NoABB* raiz;
@@ -33,20 +34,30 @@ class TSArvoreBuscaBinaria {
         void exibeTS(); 
 };
 
-template <class par>
-TSArvoreBuscaBinaria<par> :: TSArvoreBuscaBinaria() {
+template <class Chave, class Valor>
+arvoreBin<Chave, Valor> :: arvoreBin(string nome_arquivo) {
     n = 0;
     raiz = nullptr;
+
+    ifstream texto;
+    string palavra;
+
+    texto.open(nome_arquivo, ios::in);
+
+    while(texto >> palavra) 
+        insere(palavra, 1);
+
+    texto.close();
 }
 
-template <class par>
-TSArvoreBuscaBinaria<par> :: ~TSArvoreBuscaBinaria() {
+template <class Chave, class Valor>
+arvoreBin<Chave, Valor> :: ~arvoreBin() {
     //Executar em pós-ordem
     destroiArvoreABB(raiz);
 }
 
-template <class par> 
-void TSArvoreBuscaBinaria<par> :: destroiArvoreABB(NoABB* q) {
+template <class Chave, class Valor> 
+void arvoreBin<Chave, Valor> :: destroiArvoreABB(NoABB* q) {
     if(q != nullptr) {
         destroiArvoreABB(q->esq);
         destroiArvoreABB(q->dir);
@@ -54,8 +65,8 @@ void TSArvoreBuscaBinaria<par> :: destroiArvoreABB(NoABB* q) {
     }
 }
 
-template <class par>
-NoABB* TSArvoreBuscaBinaria<par> :: criaNo(Chave chave, Item valor) {
+template <class Chave, class Valor>
+NoABB* arvoreBin<Chave, Valor> :: criaNo(Chave chave, Item valor) {
     NoABB* novo = new NoABB;
     novo->chave = chave;
     novo->valor = valor;
@@ -67,8 +78,8 @@ NoABB* TSArvoreBuscaBinaria<par> :: criaNo(Chave chave, Item valor) {
 }
 
 /* O(log n) */
-template <class par>
-void TSArvoreBuscaBinaria<par> :: insere(Chave chave, Item valor) {
+template <class Chave, class Valor>
+void arvoreBin<Chave, Valor> :: insere(Chave chave, Item valor) {
     bool chaveExiste = false;
     NoABB* aux;
     bool criouNovoNo = false;
@@ -127,8 +138,8 @@ void TSArvoreBuscaBinaria<par> :: insere(Chave chave, Item valor) {
 
 /*Retorna o valor da chave correspondente ou -1 se a chave não existe*/
 /* O(log n) */
-template <class par>
-Item TSArvoreBuscaBinaria<par> :: devolve(Chave chave) {
+template <class Chave, class Valor>
+Item arvoreBin<Chave, Valor> :: devolve(Chave chave) {
     Item valor = -1;
     NoABB* aux;
 
@@ -149,8 +160,8 @@ Item TSArvoreBuscaBinaria<par> :: devolve(Chave chave) {
     return valor;
 }
 
-template <class par>
-NoABB* TSArvoreBuscaBinaria<par> :: removeUtilRecur(NoABB* q, Chave chave, bool& removeu) {
+template <class Chave, class Valor>
+NoABB* arvoreBin<Chave, Valor> :: removeUtilRecur(NoABB* q, Chave chave, bool& removeu) {
 
     //Não achou o nó
     if(q == nullptr) return nullptr;
@@ -206,15 +217,15 @@ NoABB* TSArvoreBuscaBinaria<par> :: removeUtilRecur(NoABB* q, Chave chave, bool&
 }
 
 /* O(log n) */
-template <class par>
-void TSArvoreBuscaBinaria<par> :: remove(Chave chave) {
+template <class Chave, class Valor>
+void arvoreBin<Chave, Valor> :: remove(Chave chave) {
     bool removeu = false;
     raiz = removeUtilRecur(raiz, chave, removeu);
 }
 
 /* O(log n) */
-template <class par>
-int TSArvoreBuscaBinaria<par> :: rank(Chave chave) {
+template <class Chave, class Valor>
+int arvoreBin<Chave, Valor> :: rank(Chave chave) {
     int n_elements = 0;
     int r;
     if(chave == raiz->chave) {
@@ -247,8 +258,8 @@ int TSArvoreBuscaBinaria<par> :: rank(Chave chave) {
 }
 
 /* O(n) */
-template <class par>
-Chave TSArvoreBuscaBinaria<par> :: seleciona(int k) {
+template <class Chave, class Valor>
+Chave arvoreBin<Chave, Valor> :: seleciona(int k) {
     Chave chave = "";
     int r;
     NoABB* aux = raiz;
@@ -269,8 +280,8 @@ Chave TSArvoreBuscaBinaria<par> :: seleciona(int k) {
     return chave;
 }
 
-template <class par>
-void TSArvoreBuscaBinaria<par> :: exibeTSUtilRecur(NoABB* q) {
+template <class Chave, class Valor>
+void arvoreBin<Chave, Valor> :: exibeTSUtilRecur(NoABB* q) {
     if(q != nullptr) {
         exibeTSUtilRecur(q->esq);
         cout << "Chave: " << q->chave << ", Valor: " << q->valor << endl;
@@ -278,8 +289,8 @@ void TSArvoreBuscaBinaria<par> :: exibeTSUtilRecur(NoABB* q) {
     }
 }
 
-template <class par>
-void TSArvoreBuscaBinaria<par> :: exibeTS() {
+template <class Chave, class Valor>
+void arvoreBin<Chave, Valor> :: exibeTS() {
     exibeTSUtilRecur(raiz);
     cout << n << endl;
 

@@ -2,6 +2,7 @@
 #define TS_TABELAS_DE_HASHING_H
 
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include "estruturas.h"
 using namespace std;
@@ -9,11 +10,11 @@ using namespace std;
 typedef string Chave;
 typedef int Item;
 
-template <class par>
-class TSTabelasDeHashing { 
+template <class Chave, class Valor>
+class hashTable { 
     public:
-        TSTabelasDeHashing();
-        ~TSTabelasDeHashing();
+        hashTable(string nome_arquivo);
+        ~hashTable();
 
         /*Métodos da TS*/
         void insere(Chave chave, Item valor);
@@ -35,18 +36,30 @@ class TSTabelasDeHashing {
         int m;
 };
 
-template <class par>
-TSTabelasDeHashing<par> :: TSTabelasDeHashing() {
+template <class Chave, class Valor>
+hashTable<Chave, Valor> :: hashTable(string nome_arquivo) {
     n = 0;
     m = 7000;
     table = new CelulasHash*[m];
 
     for (int i = 0; i < m; i++)
         table[i] = nullptr;
+
+    ifstream texto;
+    string palavra;
+
+    texto.open(nome_arquivo, ios::in);
+
+    while(texto >> palavra) {
+        insere(palavra, 1);
+        cout << palavra << endl;
+    }
+
+    texto.close();
 }
 
-template <class par>
-TSTabelasDeHashing<par> :: ~TSTabelasDeHashing() {
+template <class Chave, class Valor>
+hashTable<Chave, Valor> :: ~hashTable() {
     CelulasHash *aux, *aux2;
     for (int i = 0; i < m; i++) {
         if((aux = table[i]) != nullptr) {
@@ -60,8 +73,8 @@ TSTabelasDeHashing<par> :: ~TSTabelasDeHashing() {
     delete[] table;
 }
 
-template <class par>
-int TSTabelasDeHashing<par> :: hash(Chave chave) {
+template <class Chave, class Valor>
+int hashTable<Chave, Valor> :: hash(Chave chave) {
     int len = chave.length();
     int h = 0;
 
@@ -72,8 +85,8 @@ int TSTabelasDeHashing<par> :: hash(Chave chave) {
 }
  
 /* O(1) */
-template <class par>
-void TSTabelasDeHashing<par> :: insere(Chave chave, Item valor) {
+template <class Chave, class Valor>
+void hashTable<Chave, Valor> :: insere(Chave chave, Item valor) {
     int pos = hash(chave);
     CelulasHash *novo, *aux;
     bool achou = false;
@@ -82,7 +95,7 @@ void TSTabelasDeHashing<par> :: insere(Chave chave, Item valor) {
     if( (aux = table[pos]) != nullptr) {
         while (aux != nullptr && !achou) {
             if(aux->chave == chave) {
-                aux->valor += 1;
+                aux->valor++;
                 achou = true;
             }
             aux = aux->prox;
@@ -112,8 +125,8 @@ void TSTabelasDeHashing<par> :: insere(Chave chave, Item valor) {
 
 /*Retorna o valor da chave correspondente ou -1 se a chave não existe*/
 /* O(log n) */
-template <class par>
-Item TSTabelasDeHashing<par> :: devolve(Chave chave) {
+template <class Chave, class Valor>
+Item hashTable<Chave, Valor> :: devolve(Chave chave) {
     Item valor = -1;
     int pos = hash(chave);
     CelulasHash* aux;
@@ -132,8 +145,8 @@ Item TSTabelasDeHashing<par> :: devolve(Chave chave) {
 }
 
 /* O(1) - Sem lazy deletion*/
-template <class par>
-void TSTabelasDeHashing<par> :: remove(Chave chave) {
+template <class Chave, class Valor>
+void hashTable<Chave, Valor> :: remove(Chave chave) {
     int pos = hash(chave);
     CelulasHash* aux;
 
@@ -158,21 +171,42 @@ void TSTabelasDeHashing<par> :: remove(Chave chave) {
     }
 }
 
-/* O(log n) */
-template <class par>
-int TSTabelasDeHashing<par> :: rank(Chave chave) {
-    return -1;
+/* O(n) */
+template <class Chave, class Valor>
+int hashTable<Chave, Valor> :: rank(Chave chave) {
+    CelulasHash* aux;
+    int r = 0;
+
+    for (int i = 0; i < m; i++) {
+        aux = table[i];
+        while(aux != nullptr) {
+            if(aux->chave < chave) {
+                r++;
+            }
+            aux = aux->prox;
+        }    
+    }
+    return r;
 }
 
-/* O(1) */
-template <class par>
-Chave TSTabelasDeHashing<par> :: seleciona(int k) {
-    
+/* O(n^2) */
+template <class Chave, class Valor>
+Chave hashTable<Chave, Valor> :: seleciona(int k) {
+    CelulasHash* aux;
+    for (int i = 0; i < m; i++) {
+        aux = table[i];
+        while(aux != nullptr) {
+            if(rank(aux->chave) == k) {
+                return aux->chave;
+            }
+            aux = aux->prox;
+        }    
+    }
     return "";
 }
 
-template <class par>
-void TSTabelasDeHashing<par> :: checaDistribuicaoDaTabela() {
+template <class Chave, class Valor>
+void hashTable<Chave, Valor> :: checaDistribuicaoDaTabela() {
     int quantEl;
     CelulasHash* aux;
     int maxLista = 0;
@@ -191,8 +225,8 @@ void TSTabelasDeHashing<par> :: checaDistribuicaoDaTabela() {
     cout << "A maior lista tem: " << maxLista << endl;
 }
 
-template <class par>
-void TSTabelasDeHashing<par> :: exibeTS() {
+template <class Chave, class Valor>
+void hashTable<Chave, Valor> :: exibeTS() {
     CelulasHash* aux;
     int n = 0;
 

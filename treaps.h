@@ -2,17 +2,18 @@
 #define TS_TREAPS_H
 
 #include <iostream>
+#include <fstream>
 #include <ctime> 
 #include <climits> /*INT_MAX*/
 #include "estruturas.h" /* NoTreap* */
 using namespace std;
 
 
-template <class par>
-class TSTreaps { 
+template <class Chave, class Valor>
+class treap { 
     public:
-        TSTreaps();
-        ~TSTreaps();
+        treap(string nome_arquivo);
+        ~treap();
 
         /*Treap*/
         NoTreap* raiz;
@@ -40,21 +41,31 @@ class TSTreaps {
         void exibeTS(); 
 };
 
-template <class par>
-TSTreaps<par> :: TSTreaps() {
+template <class Chave, class Valor>
+treap<Chave, Valor> :: treap(string nome_arquivo) {
     n = 0;
     srand((int) time(0));
     raiz = nullptr;
+
+    ifstream texto;
+    string palavra;
+
+    texto.open(nome_arquivo, ios::in);
+
+    while(texto >> palavra) 
+        insere(palavra, 1);
+
+    texto.close();
 }
 
-template <class par>
-TSTreaps<par> :: ~TSTreaps() {
+template <class Chave, class Valor>
+treap<Chave, Valor> :: ~treap() {
     //Executar em pós-ordem
     destroiTreap(raiz);
 }
 
-template <class par> 
-void TSTreaps<par> :: destroiTreap(NoTreap* q) {
+template <class Chave, class Valor> 
+void treap<Chave, Valor> :: destroiTreap(NoTreap* q) {
     if(q != nullptr) {
         destroiTreap(q->esq);
         destroiTreap(q->dir);
@@ -62,8 +73,8 @@ void TSTreaps<par> :: destroiTreap(NoTreap* q) {
     }
 }
 
-template <class par>
-NoTreap* TSTreaps<par> :: rotacaoEsq(NoTreap* p) {
+template <class Chave, class Valor>
+NoTreap* treap<Chave, Valor> :: rotacaoEsq(NoTreap* p) {
     if(p == nullptr || p->dir == nullptr) {
         return p;
     }
@@ -75,8 +86,8 @@ NoTreap* TSTreaps<par> :: rotacaoEsq(NoTreap* p) {
     return aux;
 }
 
-template <class par>
-NoTreap* TSTreaps<par> :: rotacaoDir(NoTreap* p) {
+template <class Chave, class Valor>
+NoTreap* treap<Chave, Valor> :: rotacaoDir(NoTreap* p) {
     if(p == nullptr || p->esq == nullptr) {
         return p;
     }
@@ -88,8 +99,8 @@ NoTreap* TSTreaps<par> :: rotacaoDir(NoTreap* p) {
     return aux;
 }
 
-template <class par>
-NoTreap* TSTreaps<par> :: criaNo(Chave chave, Item valor) {
+template <class Chave, class Valor>
+NoTreap* treap<Chave, Valor> :: criaNo(Chave chave, Item valor) {
     NoTreap* novo = new NoTreap;
     novo->chave = chave;
     novo->valor = valor;
@@ -101,8 +112,8 @@ NoTreap* TSTreaps<par> :: criaNo(Chave chave, Item valor) {
     return novo;
 }
 
-template <class par>
-NoTreap* TSTreaps<par> :: insereUtilRecur(NoTreap* p, Chave chave, Item valor, bool& criouNovoNo) {
+template <class Chave, class Valor>
+NoTreap* treap<Chave, Valor> :: insereUtilRecur(NoTreap* p, Chave chave, Item valor, bool& criouNovoNo) {
     
     if(p == nullptr) {
         p = criaNo(chave, valor);
@@ -134,16 +145,16 @@ NoTreap* TSTreaps<par> :: insereUtilRecur(NoTreap* p, Chave chave, Item valor, b
 }
 
 /* O(log n) */
-template <class par>
-void TSTreaps<par> :: insere(Chave chave, Item valor) {
+template <class Chave, class Valor>
+void treap<Chave, Valor> :: insere(Chave chave, Item valor) {
     bool criouNovoNo = false;
     raiz = insereUtilRecur(raiz, chave, valor, criouNovoNo);
 }
 
 /*Retorna o valor da chave correspondente ou -1 se a chave não existe*/
 /* O(log n) */
-template <class par>
-Item TSTreaps<par> :: devolve(Chave chave) {
+template <class Chave, class Valor>
+Item treap<Chave, Valor> :: devolve(Chave chave) {
     Item valor = -1;
     NoTreap* aux;
 
@@ -164,8 +175,8 @@ Item TSTreaps<par> :: devolve(Chave chave) {
     return valor;
 }
 
-template <class par>
-NoTreap* TSTreaps<par> :: removeUtilRecur(NoTreap* q, Chave chave, bool& removeu) {
+template <class Chave, class Valor>
+NoTreap* treap<Chave, Valor> :: removeUtilRecur(NoTreap* q, Chave chave, bool& removeu) {
 
     //Não achou o nó
     if(q == nullptr) return nullptr;
@@ -227,15 +238,15 @@ NoTreap* TSTreaps<par> :: removeUtilRecur(NoTreap* q, Chave chave, bool& removeu
 }
 
 /* O(log n) */
-template <class par>
-void TSTreaps<par> :: remove(Chave chave) {
+template <class Chave, class Valor>
+void treap<Chave, Valor> :: remove(Chave chave) {
     bool removeu = false;
     raiz = removeUtilRecur(raiz, chave, removeu);
 }
 
 /* O(log n) */
-template <class par>
-int TSTreaps<par> :: rank(Chave chave) {
+template <class Chave, class Valor>
+int treap<Chave, Valor> :: rank(Chave chave) {
     int n_elements = 0;
     int r;
     if(chave == raiz->chave) {
@@ -269,8 +280,8 @@ int TSTreaps<par> :: rank(Chave chave) {
 }
 
 /* O(n) */
-template <class par>
-Chave TSTreaps<par> :: seleciona(int k) {
+template <class Chave, class Valor>
+Chave treap<Chave, Valor> :: seleciona(int k) {
     Chave chave = "";
     int r;
     NoTreap* aux = raiz;
@@ -291,8 +302,8 @@ Chave TSTreaps<par> :: seleciona(int k) {
     return chave;
 }
 
-template <class par>
-void TSTreaps<par> :: exibeTSUtilRecur(NoTreap* q) {
+template <class Chave, class Valor>
+void treap<Chave, Valor> :: exibeTSUtilRecur(NoTreap* q) {
     if(q != nullptr) {
         exibeTSUtilRecur(q->esq);
         cout << "Chave: " << q->chave << ", Valor: " << q->valor << endl;
@@ -300,8 +311,8 @@ void TSTreaps<par> :: exibeTSUtilRecur(NoTreap* q) {
     }
 }
 
-template <class par>
-void TSTreaps<par> :: exibeTS() {
+template <class Chave, class Valor>
+void treap<Chave, Valor> :: exibeTS() {
     exibeTSUtilRecur(raiz);
     cout << n << endl;
 }

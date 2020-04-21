@@ -22,7 +22,16 @@ using namespace std;
 //                         ERRO(), AVISO(), getLine() */
 
 /* tabela de símbolos */
-#include "tabeladesimbolos.hpp"  /* devolve(), insere(), remove(), ... */
+//#include "tabeladesimbolos.hpp"  /* devolve(), insere(), remove(), ... */
+#include "vetor_desordenado.h"
+#include "vetor_ordenado.h"
+#include "lista_ligada_desordenada.h"
+#include "lista_ligada_ordenada.h"
+#include "arvore_busca_binaria.h"
+#include "treaps.h"
+#include "arvores_rubro_negras.h"
+#include "arvores_23.h"
+#include "tabelas_de_hashing.h"
 
 #define PROMPT      cout << ">>> ";
 #define MIN_ST      "minST"
@@ -36,20 +45,16 @@ using namespace std;
 /*
  *  P R O T Ó T I P O S
  */
-static void 
-mostreUso (char *nomePrograma);
+static void mostreUso (string nomePrograma);
 
 template <class ST>
-void 
-testeOperacoes(ST st);
+void testeOperacoes(ST st);
 
 /*---------------------------------------------------------------*/
 /* 
  *  M A I N 
  */
-int 
-main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     fstream arqTexto;
 
     if (argc < 3) mostreUso(argv[0]);
@@ -76,7 +81,7 @@ main(int argc, char *argv[])
 
     if (tipo == "VD"){
         start = clock(); 
-        vetorDes<String,Integer> *st = new vetorDes<String, Integer>(nome_arquivo);
+        vetorDes<string, int> *st = new vetorDes<string, int>(nome_arquivo);
         end = clock();
 
         /* calcule o tempo */
@@ -84,10 +89,11 @@ main(int argc, char *argv[])
         cout << "arquivo lido e ST construida em " << elapsed << " segundos\n";
 
         testeOperacoes(st);
+		delete st;
     }
     else if (tipo == "VO"){
         start = clock(); 
-        vetorOrd<String,Integer> *st = new vetorOrd<String,Integer>(nome_arquivo);
+        vetorOrd<string,int> *st = new vetorOrd<string,int>(nome_arquivo);
         end = clock();
 
         /* calcule o tempo */
@@ -95,10 +101,11 @@ main(int argc, char *argv[])
         cout << "arquivo lido e ST construida em " << elapsed << " segundos\n";
 
         testeOperacoes(st);
+		delete st;
     }
     else if (tipo == "LD"){
         start = clock(); 
-        listaDes<String,Integer> *st = new listaDes<String,Integer>(nome_arquivo);
+        listaDes<string,int> *st = new listaDes<string,int>(nome_arquivo);
         end = clock();
 
         /* calcule o tempo */
@@ -106,10 +113,11 @@ main(int argc, char *argv[])
         cout << "arquivo lido e ST construida em " << elapsed << " segundos\n";
 
         testeOperacoes(st);
+		delete st;
     }
     else if (tipo == "LO"){
         start = clock(); 
-        listaOrd<String,Integer> *st = new listaOrd<String,Integer>(nome_arquivo);
+        listaOrd<string,int> *st = new listaOrd<string,int>(nome_arquivo);
         end = clock();
 
         /* calcule o tempo */
@@ -117,10 +125,11 @@ main(int argc, char *argv[])
         cout << "arquivo lido e ST construida em " << elapsed << " segundos\n";
 
         testeOperacoes(st);
+		delete st;
     }
     else if (tipo == "AB"){
         start = clock(); 
-        arvoreBin<String,Integer> *st = new arvoreBin<String,Integer>(nome_arquivo);
+        arvoreBin<string,int> *st = new arvoreBin<string,int>(nome_arquivo);
         end = clock();
 
         /* calcule o tempo */
@@ -128,10 +137,11 @@ main(int argc, char *argv[])
         cout << "arquivo lido e ST construida em " << elapsed << " segundos\n";
 
         testeOperacoes(st);
+		delete st;
     }
     else if (tipo == "TR"){
         start = clock(); 
-        treap<String,Integer> *st = new treap<String,Integer>(nome_arquivo);
+        treap<string,int> *st = new treap<string,int>(nome_arquivo);
         end = clock();
 
         /* calcule o tempo */
@@ -139,10 +149,11 @@ main(int argc, char *argv[])
         cout << "arquivo lido e ST construida em " << elapsed << " segundos\n";
 
         testeOperacoes(st);
+		delete st;
     }
     else if (tipo == "A23"){
         start = clock(); 
-        arvore23<String,Integer> *st = new arvore23<String,Integer>(nome_arquivo);
+        arvore23<string,int> *st = new arvore23<string,int>(nome_arquivo);
         end = clock();
 
         /* calcule o tempo */
@@ -150,10 +161,11 @@ main(int argc, char *argv[])
         cout << "arquivo lido e ST construida em " << elapsed << " segundos\n";
 
         testeOperacoes(st);
+		delete st;
     }
     else if (tipo == "RN"){
         start = clock(); 
-        arvoreRN<String,Integer> *st = new arvoreRN<String,Integer>(nome_arquivo);
+        arvoreRN<string,int> *st = new arvoreRN<string,int>(nome_arquivo);
         end = clock();
 
         /* calcule o tempo */
@@ -161,10 +173,11 @@ main(int argc, char *argv[])
         cout << "arquivo lido e ST construida em " << elapsed << " segundos\n";
 
         testeOperacoes(st);
+		delete st;
     }
     else if (tipo == "HS"){
         start = clock(); 
-        hashTable<String,Integer> *st = new hashTable<String,Integer>(nome_arquivo);
+        hashTable<string,int> *st = new hashTable<string,int>(nome_arquivo);
         end = clock();
 
         /* calcule o tempo */
@@ -172,6 +185,7 @@ main(int argc, char *argv[])
         cout << "arquivo lido e ST construida em " << elapsed << " segundos\n";
 
         testeOperacoes(st);
+		delete st;
     }
     else {
         cout << "A estrutura" << tipo << "não é válida";
@@ -188,87 +202,95 @@ main(int argc, char *argv[])
  *  RECEBE uma tabela de símbolos ST e testa várias operações
  *  interativamente.
  *
- *  A função supõe que as chaves são do tipo String e os
- *  valores são do tipo Integer (ver util.h).
+ *  A função supõe que as chaves são do tipo string e os
+ *  valores são do tipo int (ver util.h).
  */
 template <class ST>
-void 
-testeOperacoes(ST st)
-{
-    String linha    = NULL;
-    
+void testeOperacoes(ST st) {
+    ifstream texto;
+    string operacao;
     /* mostre uso */
     cout << "Possiveis operacoes do teste interativo:\n";
     cout << "minST, delminST, getST <chave>; rankST <chave>, deleteST <chave>, selectST <int>\n";
     cout << "CRTL-D para encerrar.\n";
     PROMPT;
-    while ((linha = getLine(stdin))) {
-        /* pegue operacao a ser testada */
-        String operacao = getNextToken(linha);
-        if (operacao == NULL) {
+
+    
+    /* pegue operacao a ser testada */
+    while (operacao != "stop") {
+        cin >> operacao;
+        if (operacao == "") {
              ERROR(operacao esperada);
         }
         /*---------------------------------*/
-        else if (!strcmp(operacao, MIN_ST)) {
-            String key = st->seleciona(0);
-            if (key == NULL) {
+        else if (operacao == MIN_ST) {
+            string key = st->seleciona(0);
+            if (key == "") {
                 cout << "ST vazia\n";
-            } else {
-                cout << key;
+            } 
+            else {
+                cout << key << "\n";
             }
         }
         /*---------------------------------*/
-        else if (!strcmp(operacao,DELMIN_ST)) {
-            String key = st->seleciona(0);
-            if (key == NULL) {
+        else if (operacao == DELMIN_ST) {
+            string key = st->seleciona(0);
+            if (key == "") {
                 cout << "ST já está vazia\n";
-            } else {
+            } 
+            else {
+                cout << "\"" << key; 
                 st->remove(key);
-                cout << "\"" << key << "\" foi removida\n";
+                cout << "\" foi removida\n";
             }
         }
         /*---------------------------------*/
         else {
             /* operaÃ§Ã£o necessita de argumento key */
-            String key = getNextToken(NULL);
-            if (key == NULL) {
+            string key;
+            cin >> key;
+            if (key == "") {
                 ERROR(operacao necessita uma palavra);
-            } else {
+            } 
+            else {
                 /*---------------------------------*/
-                if (!strcmp(operacao,GET_ST)) {
-                    Integer frequencia = NULL;
+                if (operacao == GET_ST) {
+                    int frequencia = -1;
                     frequencia = st->devolve(key); /* consulte a ST */
                     /* mostre o resultado da consulta */
-                    if (frequencia == NULL) {
+                    if (frequencia == -1) {
                         cout << key << ": 0\n";
-                    } else {
-                        cout << key << ": " << *frequencia << "\n";
+                    } 
+                    else {
+                        cout << key << ": " << frequencia << "\n";
                     }
                 }
                 /*---------------------------------*/
-                else if (!strcmp(operacao,RANK_ST)) {
+                else if (operacao == RANK_ST) {
                     int r = st->rank(key);
                     cout << r << "\n";
                 }
                 /*---------------------------------*/
-                else if (!strcmp(operacao,DELETE_ST)) {
+                else if (operacao == DELETE_ST) {
                     st->remove(key);
                     cout << "\"" << key << "\" foi removida\n";
                 }
-                else if (!strcmp(operacao,SELECT_ST)) {
-                    int pos = atoi(key);
-                    String chave = st->seleciona(pos);
+                else if (operacao == SELECT_ST) {
+                    int pos = stoi(key);
+                    string chave = st->seleciona(pos);
                     cout << "Posição " << key << " = " << chave << "\n";
                 }
                 else {
                     ERROR(operacao nao reconhecida);
                 }
             }
+            //free(key);
         }
-        if (operacao != NULL) free(operacao);
-        free(linha);
+        //if (operacao != NULL) free(operacao);
+        //free(linha);
         PROMPT;
     }
+    cout << "opa" << endl;
     cout << "\n";
 }
 
@@ -278,9 +300,7 @@ testeOperacoes(ST st)
  *  I M P L E M E N T A Ç Ã O   D A S   F U N Ç Õ E S
  *                 A U X I L I A R E S 
  */
-static void 
-mostreUso (char *nomePrograma)
-{
+static void mostreUso (string nomePrograma) {
     cout << "Uso \n"
 	     << "prompt> " << nomePrograma << " nome-arquivo tipo-tabela\n"
 	     << "    nome-arquivo = nome do arquivo com o texto\n"

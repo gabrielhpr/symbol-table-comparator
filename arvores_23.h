@@ -5,15 +5,16 @@
 #define debug(args...) fprintf(stderr, args)
 
 #include <iostream>
+#include <fstream>
 #include "estruturas.h"
 using namespace std;
 
 
-template <class par>
-class TSArvore23 { 
+template <class Chave, class Valor>
+class arvore23 { 
     public:
-        TSArvore23();
-        ~TSArvore23();
+        arvore23(string nome_arquivo);
+        ~arvore23();
 
         /*Árvore de Busca Binária*/
         No23* raiz;
@@ -38,30 +39,41 @@ class TSArvore23 {
         void exibeTS(); 
 };
 
-template <class par>
-TSArvore23<par> :: TSArvore23() {
+template <class Chave, class Valor>
+arvore23<Chave, Valor> :: arvore23(string nome_arquivo) {
     n = 0;
     raiz = nullptr;
+
+    ifstream texto;
+    string palavra;
+
+    texto.open(nome_arquivo, ios::in);
+
+    while(texto >> palavra) 
+        insere(palavra, 1);
+
+    texto.close();
 }
 
-template <class par> 
-void TSArvore23<par> :: destroiArvore23(No23* q) {
+template <class Chave, class Valor> 
+void arvore23<Chave, Valor> :: destroiArvore23(No23* q) {
     if(q != nullptr) {
         destroiArvore23(q->ap1);
         destroiArvore23(q->ap2);
-        destroiArvore23(q->ap3);
+        if(!q->doisNo)
+            destroiArvore23(q->ap3);
         delete q;
     }
 }
 
-template <class par>
-TSArvore23<par> :: ~TSArvore23() {
+template <class Chave, class Valor>
+arvore23<Chave, Valor> :: ~arvore23() {
     //Executar em pós-ordem
     destroiArvore23(raiz);
 }
 
-template <class par>
-void TSArvore23<par> :: constroiDoisNo(No23* novo, Chave chave, Item valor) {
+template <class Chave, class Valor>
+void arvore23<Chave, Valor> :: constroiDoisNo(No23* novo, Chave chave, Item valor) {
     novo->chave1 = chave;
     novo->valor1 = valor;
     novo->ap1 = nullptr;
@@ -72,8 +84,8 @@ void TSArvore23<par> :: constroiDoisNo(No23* novo, Chave chave, Item valor) {
     novo->quantNosSubArvDir = 0;
 }
 
-template <class par>
-No23* TSArvore23<par> :: put23(No23 *raizSub, Chave chave, Item valor, bool &cresceu) {
+template <class Chave, class Valor>
+No23* arvore23<Chave, Valor> :: put23(No23 *raizSub, Chave chave, Item valor, bool &cresceu) {
     //debug("entrou no put23 \n");
     //Árvore vazia
     if (raizSub == nullptr){
@@ -245,8 +257,8 @@ No23* TSArvore23<par> :: put23(No23 *raizSub, Chave chave, Item valor, bool &cre
 }
 
 /* O(log n) */
-template <class par>
-void TSArvore23<par> :: insere(Chave chave, Item valor) {
+template <class Chave, class Valor>
+void arvore23<Chave, Valor> :: insere(Chave chave, Item valor) {
     bool cresceu = false;
     bool achou = false;
 
@@ -283,8 +295,8 @@ void TSArvore23<par> :: insere(Chave chave, Item valor) {
 
 /*Retorna o valor da chave correspondente ou -1 se a chave não existe*/
 /* O(log n) */
-template <class par>
-Item TSArvore23<par> :: devolve(Chave chave) {
+template <class Chave, class Valor>
+Item arvore23<Chave, Valor> :: devolve(Chave chave) {
     bool achou = false;
     Item valor = -1;
 
@@ -315,32 +327,32 @@ Item TSArvore23<par> :: devolve(Chave chave) {
     return valor;
 } 
 
-template <class par>
-No23* TSArvore23<par> :: removeUtilRecur(No23* q, Chave chave, bool& removeu) {
+template <class Chave, class Valor>
+No23* arvore23<Chave, Valor> :: removeUtilRecur(No23* q, Chave chave, bool& removeu) {
 
 }
 
 /* O(log n) */
-template <class par>
-void TSArvore23<par> :: remove(Chave chave) {
+template <class Chave, class Valor>
+void arvore23<Chave, Valor> :: remove(Chave chave) {
     bool removeu = false;
     raiz = removeUtilRecur(raiz, chave, removeu);
 }
 
 /* O(log n) */
-template <class par>
-int TSArvore23<par> :: rank(Chave chave) {
+template <class Chave, class Valor>
+int arvore23<Chave, Valor> :: rank(Chave chave) {
     
 }
 
 /* O(n) */
-template <class par>
-Chave TSArvore23<par> :: seleciona(int k) {
+template <class Chave, class Valor>
+Chave arvore23<Chave, Valor> :: seleciona(int k) {
     
 }
 
-template <class par>
-void TSArvore23<par> :: exibeTSUtilRecur(No23* q) {
+template <class Chave, class Valor>
+void arvore23<Chave, Valor> :: exibeTSUtilRecur(No23* q) {
     if(q != nullptr) {
         exibeTSUtilRecur(q->ap1);
         cout << "Chave-P: " << q->chave1 << ", Valor: " << q->valor1
@@ -357,8 +369,8 @@ void TSArvore23<par> :: exibeTSUtilRecur(No23* q) {
     }
 }
 
-template <class par>
-void TSArvore23<par> :: exibeTS() {
+template <class Chave, class Valor>
+void arvore23<Chave, Valor> :: exibeTS() {
     exibeTSUtilRecur(raiz);
     cout << n << endl;
 }
