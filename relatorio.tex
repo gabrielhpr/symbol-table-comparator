@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+
+\title{Relatório EP1}
+\author{Gabriel Henrique Pinheiro Rodrigues NUSP: 112.216-47}
+\date{Março 2020}
+
+\begin{document}
+\maketitle
+
+\part*{Implementação}   
+As tabelas de símbolos foram implementadas seguindo o padrão <Chave, Valor> sendo Chave do tipo 
+string e Valor do tipo int, portanto quando uma chave ou valor não é encontrado na tabela, é retornado
+respectivamente $``$ '' e -1;
+
+\section{Vetor Desordenado}
+
+\subsection{Insere $O(n)$} 
+É necessário verificar se o elemento a ser inserido pertence a tabela ou não, se não pertence insere no fim.
+\subsection{Devolve $O(n)$}
+Não há relação de ordem, logo é necessário checar todos os elementos da tabela até encontrar.
+\subsection{Remove $O(n)$}
+Não foi utilizado lazy deletion, logo é necessário buscar o elemento e redimensionar o array.
+\subsection{Rank $O(n)$}
+Percorre toda a tabela, comparando a chave dos elementos com a chave analisada.
+\subsection{Seleciona $O(n^2)$}
+Percorre toda a tabela, chamando a função rank para cada elemento até encontrar um com rank igual a k.
+
+\section{Vetor Ordenado}
+
+\subsection{Insere $O(n)$} 
+É necessário verificar se o elemento a ser inserido pertence a tabela ou não, se não pertence insere 
+e desloca todos os elementos maiores do que ele.
+\subsection{Devolve $O(\log_{2}n)$}
+Há relação de ordem, logo é possível fazer busca binária.
+\subsection{Remove $O(n)$}
+Não foi utilizado lazy deletion, logo é necessário buscar o elemento ($\log_{2}n$) e redimensionar o array (Pior 
+caso: O(n)).
+\subsection{Rank $O(\log_{2}n)$}
+Como há relação de ordem entre os elementos, basta procurar o primeiro elemento maior do que o elemento da 
+chave.
+\subsection{Seleciona $O(1)$}
+Como não foi utilizado lazy deletion o elemento de rank k é o elemento de índice k.
+
+\section{Lista Ligada Desordenada}
+
+\subsection{Insere $O(n)$} 
+É necessário verificar se o elemento a ser inserido pertence a tabela ou não, se não pertence insere no início.
+\subsection{Devolve $O(n)$}
+Não há relação de ordem, logo é necessário checar todos os elementos da tabela até encontrar.
+\subsection{Remove $O(n)$}
+A eliminação do elemento é $O(1)$, porém a busca do elemento é $O(n)$.
+\subsection{Rank $O(n)$}
+Percorre toda a tabela, comparando a chave dos elementos com a chave analisada.
+\subsection{Seleciona $O(n^2)$}
+Percorre toda a tabela, chamando a função rank para cada elemento até encontrar um com rank igual a k.
+
+\section{Lista Ligada Ordenada}
+
+\subsection{Insere $O(n)$} 
+É necessário verificar se o elemento a ser inserido pertence a tabela ou não, se não pertence insere de maneira
+ordenada.
+\subsection{Devolve $O(n)$}
+Há relação de ordem, mas não há acesso imediato a qualquer elemento da tabela, logo é necessário avançar até
+o elemento com a chave correspondente.
+\subsection{Remove $O(n)$}
+A eliminação do elemento é $O(1)$, porém a busca do elemento é $O(n)$.
+\subsection{Rank $O(n)$}
+Percorre a tabela enquanto as chaves são menores do que a chave analisada.
+\subsection{Seleciona $O(n)$}
+Percorre a tabela até chegar no elemento de índice k.
+\end{document}
