@@ -2,7 +2,7 @@
 #define TS_ARVORES_RUBRO_NEGRAS_H
 #include <iostream>
 #include <fstream>
-#include "estruturas.h"
+#include "estruturas.hpp"
 using namespace std;
 
 template <class Chave, class Valor>
@@ -636,7 +636,7 @@ int arvoreRN<Chave, Valor> :: rank(Chave chave) {
     else {
         NoRN* aux;
         if(chave < raiz->chave) 
-            aux = raiz->esq;    
+            aux = raiz->esq;
         else {
             n_elements += raiz->quantNosSubArvEsq + 1;
             aux = raiz->dir;
