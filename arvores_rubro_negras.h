@@ -630,14 +630,13 @@ void arvoreRN<Chave, Valor> :: remove(Chave chave) {
 template <class Chave, class Valor>
 int arvoreRN<Chave, Valor> :: rank(Chave chave) {
     int n_elements = 0;
-    int r;
     if(chave == raiz->chave) {
         n_elements = raiz->quantNosSubArvEsq;
     }
     else {
         NoRN* aux;
         if(chave < raiz->chave) 
-            aux = raiz->esq;
+            aux = raiz->esq;    
         else {
             n_elements += raiz->quantNosSubArvEsq + 1;
             aux = raiz->dir;

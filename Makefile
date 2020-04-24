@@ -1,4 +1,5 @@
-unit_test.o:
-	g++ -o unit_test vetor_desordenado.h vetor_ordenado.h lista_ligada_desordenada.h \
-	lista_ligada_ordenada.h arvore_busca_binaria.h treaps.h arvores_23.h \
-	arvores_rubro_negras.h tabelas_de_hashing.h unit_test.cpp 
+ep1.o:
+	g++ -Wall -g -O0 -o ep1 tabeladesimbolos.hpp vetor_desordenado.hpp vetor_ordenado.hpp lista_ligada_desordenada.hpp \
+	lista_ligada_ordenada.hpp arvore_busca_binaria.hpp treaps.hpp arvores_23.hpp \
+	arvores_rubro_negras.hpp tabelas_de_hashing.hpp ep1.cpp
+
