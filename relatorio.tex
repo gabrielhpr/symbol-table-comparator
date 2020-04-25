@@ -1,16 +1,28 @@
-\documentclass{article}
+\documentclass[14pt]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[portuguese]{babel}
+\usepackage[a4paper, total={5.7in, 9.5in}]{geometry}
+\usepackage{lmodern}
+\usepackage{titlesec}
+
+\titleformat{\part}
+  {\normalfont\fontsize{17}{20}\bfseries}{\thepart}{1em}{}
+\titleformat{\section}
+  {\normalfont\fontsize{17}{19}\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\fontsize{14}{17}\bfseries}{\thesubsection}{1em}{}
 
 \title{Relatório EP1}
 \author{Gabriel Henrique Pinheiro Rodrigues NUSP: 112.216-47}
-\date{Março 2020}
+\date{Abril 2020}
 
 \begin{document}
 \maketitle
+{\fontsize{13}{16} \selectfont 
 
-\part*{Implementação}   
+
+\part{Implementação}   
 As tabelas de símbolos foram implementadas seguindo o padrão <Chave, Valor> sendo Chave do tipo 
 string e Valor do tipo int, portanto quando uma chave ou valor não é encontrado na tabela, é retornado
 respectivamente $``$ '' e -1;
@@ -27,6 +39,7 @@ Não foi utilizado lazy deletion, logo é necessário buscar o elemento e redime
 Percorre toda a tabela, comparando a chave dos elementos com a chave analisada.
 \subsection{Seleciona $O(n^2)$}
 Percorre toda a tabela, chamando a função rank para cada elemento até encontrar um com rank igual a k.
+\\
 
 \section{Vetor Ordenado}
 
@@ -43,6 +56,7 @@ Como há relação de ordem entre os elementos, basta procurar o primeiro elemen
 chave.
 \subsection{Seleciona $O(1)$}
 Como não foi utilizado lazy deletion o elemento de rank k é o elemento de índice k.
+\\
 
 \section{Lista Ligada Desordenada}
 
@@ -56,6 +70,7 @@ A eliminação do elemento é $O(1)$, porém a busca do elemento é $O(n)$.
 Percorre toda a tabela, comparando a chave dos elementos com a chave analisada.
 \subsection{Seleciona $O(n^2)$}
 Percorre toda a tabela, chamando a função rank para cada elemento até encontrar um com rank igual a k.
+\\
 
 \section{Lista Ligada Ordenada}
 
@@ -71,4 +86,172 @@ A eliminação do elemento é $O(1)$, porém a busca do elemento é $O(n)$.
 Percorre a tabela enquanto as chaves são menores do que a chave analisada.
 \subsection{Seleciona $O(n)$}
 Percorre a tabela até chegar no elemento de índice k.
+\\
+
+\section{Árvore de Busca Binária}
+Abaixo será utilizado a nomenclatura \textbf{B para representar ABBs balanceadas} e \textbf{BN para as não balanceadas}, 
+quando uma ABB não está balanceada ela se assemelha a uma lista ligada ordenada.
+
+\subsection{Insere B: $O(\log_{2}n)$, NB: $O(n)$ } 
+Se o nó não faz parte da tabela, procura de maneira ordenada onde o nó deverá entrar.
+\subsection{Devolve B: $O(\log_{2}n)$, NB: $O(n)$} 
+Como há relação de ordem e cada nó possui no máximo dois filhos, a busca é logarítmica, caso a árvore
+não esteja balanceada ela se assemelha a uma lista ligada (busca $O(n)$).
+\subsection{Remove B: $O(\log_{2}n)$, NB: $O(n)$}
+Busca o elemento ($O(\log_{2}n)$), se é folha remove direto, se é raiz procura o menor elemento da 
+sub árvore direita e substitui.
+\subsection{Rank B: $O(\log_{2}n)$, NB: $O(n)$}
+Cada nó armazena a quantidade de filhos da esquerda e da direita, logo na busca se a chave procurada
+está a direita do nó analisado é somado 1 + a quantidade de filhos da esquerda desse nó ao rank, quando a chave 
+é encontrada adiciona-se os filhos da esquerda desse nó.
+\subsection{Seleciona B: $O(\log_{2}n \cdot \log_{2}n )$, NB: $O(n^2)$}
+Realiza uma busca e para cada nó analisado chama a função rank.
+\\
+
+\section{Treaps}
+Como um treap junta o conceito de ABB com max Heap, a probabilidade dessa árvore ser balanceada
+é maior do que a ABB, um exemplo é o dicionário, que é o pior caso de uma ABB construída pela ordem
+de entrada.
+
+\subsection{Insere $O(\log_{2}n)$} 
+Se o nó não faz parte da tabela, procura de maneira ordenada onde o nó deverá entrar, insere e realiza 
+rotações para manter a propriedade max heap da árvore.
+\subsection{Devolve $O(\log_{2}n)$} 
+Como há relação de ordem e cada nó possui no máximo dois filhos, a busca é logarítmica.
+\subsection{Remove $O(\log_{2}n)$}
+Busca o elemento ($O(\log_{2}n)$), se é folha remove direto, se é raiz procura o menor elemento da 
+sub árvore direita e substitui.
+\subsection{Rank $O(\log_{2}n)$}
+Cada nó armazena a quantidade de filhos da esquerda e da direita, logo na busca se a chave procurada
+está a direita do nó analisado é somado 1 + a quantidade de filhos da esquerda desse nó ao rank, quando a chave 
+é encontrada adiciona-se os filhos da esquerda desse nó.
+\subsection{Seleciona $O(\log_{2}n \cdot \log_{2}n )$}
+Realiza uma busca e para cada nó analisado chama a função rank.
+\\
+
+\section{Árvores 23}
+As árvores 23 são balanceadas.
+
+\subsection{Insere $O(\log_{2}n)$} 
+A inserção foi implementada de maneira recursiva.
+\subsection{Devolve $O(\log_{2}n)$} 
+A busca tem complexidade melhor caso: $O(\log_{3}n)$.
+\subsection{Remove $O(\log_{2}n)$}
+A remoção foi implementada de maneira iterativa.
+\subsection{Rank $O(n)$}
+Percorre toda a árvore e determina quantos elementos são menores do que a chave analisada.
+\subsection{Seleciona $O(n^2)$}
+Percorre toda a árvore e para cada nó chama a função rank.
+\\
+
+\section{Árvores Rubro-Negras}
+As árvores rubro-negras são balanceadas
+
+\subsection{Insere $O(\log_{2}n)$} 
+A inserção foi implementada de maneira iterativa.
+\subsection{Devolve $O(\log_{2}n)$} 
+Como há relação de ordem e cada nó possui no máximo dois filhos, a busca é logarítmica.
+\subsection{Remove $O(\log_{2}n)$}
+Busca o elemento ($O(\log_{2}n)$), se é folha remove direto, se é raiz procura o menor elemento da 
+sub árvore direita e substitui.
+\subsection{Rank $O(\log_{2}n)$}
+Cada nó armazena a quantidade de filhos da esquerda e da direita, logo na busca se a chave procurada
+está a direita do nó analisado é somado 1 + a quantidade de filhos da esquerda desse nó ao rank, quando a chave 
+é encontrada adiciona-se os filhos da esquerda desse nó.
+\subsection{Seleciona $O(\log_{2}n \cdot \log_{2}n )$}
+Realiza uma busca e para cada nó analisado chama a função rank.
+\\
+
+\section{Tabelas de Hashing}
+A tabela de hashing foi implementada usando lista encadeada, o tamanho M escolhido foi 7000, pois foi
+realizado testes e para casos de 35000 palavra, a maior lista ligada possuia tamanho 8. 
+\subsection{Função Hash}
+A função cria uma hash utilizando todos os caracteres da chave, o número primo utilizado foi 23.
+\subsection{Insere $O(1)$} 
+Gera a hash do elemento e o insere.
+\subsection{Devolve $O(1)$} 
+Gera a hash a partir da chave e acessa o elemento.
+\subsection{Remove $O(1)$}
+Gera a hash do elemento e o remove da sua posição.
+\subsection{Rank $O(M)$}
+Percorre toda a tabela e determina quantos elementos são menores que a chave analisada.
+\subsection{Seleciona $O(n*M)$}
+Para cada elemento da tabela chama a função rank.
+
+\newpage
+
+\part{Testes}
+\section{Tempo de construção da tabela}
+\subsection{Livro: Metamorphosis - Size: 117Kb}
+O tempo abaixo representa uma média de uma amostra de 5.\\\\   
+\begin{tabular}{ |p{3.1cm}||p{4.1cm}|}
+    \hline
+    ESTRUTURA & TEMPO MÉDIO(s)\\
+    \hline
+    VD & 0.1867764 \\
+    VO & 0.0991724 \\
+    LD & 0.4201814 \\
+    LO & 0.4938202 \\
+    AB & 0.0234594 \\
+    TR & 0.0413610 \\
+    A23 & 0.0253700 \\
+    RN & 0.0347956 \\
+    HS & 0.0182056 \\
+    \hline
+\end{tabular}
+\\\\\\
+RANKING\\\\
+\begin{tabular}{ |p{3.1cm}||p{4.1cm}|}
+    \hline
+    ESTRUTURA & TEMPO MÉDIO(s)\\
+    \hline
+    HS & 0.0182056 \\
+    AB & 0.0234594 \\
+    A23 & 0.0253700 \\
+    RN & 0.0347956 \\
+    TR & 0.0413610 \\
+    VO & 0.0991724 \\
+    VD & 0.1867764 \\
+    LD & 0.4201814 \\
+    LO & 0.4938202 \\
+    \hline
+\end{tabular}\\\\
+
+\newpage
+
+\subsection{Livro: Holy Bible - Size: 4,6 Mb    }
+O tempo abaixo representa uma média de uma amostra de 5.\\\\
+\begin{tabular}{ |p{3.1cm}||p{4.1cm}|}
+    \hline
+    ESTRUTURA & TEMPO MÉDIO(s)\\
+    \hline
+    VD & 31.974740 \\
+    VO & 6.566988 \\
+    LD & 147.3511 \\
+    LO & 355.5532 \\
+    AB & 0.6862456 \\
+    TR & 0.7487126 \\
+    A23 & 0.468637 \\
+    RN &  0.5458928 \\
+    HS &  0.2705492 \\
+    \hline
+\end{tabular}\\\\\\
+RANKING \\\\
+\begin{tabular}{ |p{3.1cm}||p{4.1cm}|}
+    \hline
+    ESTRUTURA & TEMPO MÉDIO(s)\\
+    \hline
+    HS &  0.2705492 \\
+    A23 & 0.468637 \\
+    RN &  0.5458928 \\
+    AB & 0.6862456 \\
+    TR & 0.7487126 \\
+    VO & 6.566988 \\    
+    VD & 31.974740 \\
+    LD & 147.3511 \\
+    LO & 355.5532 \\
+    \hline
+\end{tabular}\\\\
+
+}
 \end{document}

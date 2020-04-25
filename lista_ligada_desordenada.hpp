@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "estruturas.hpp    "
+#include "estruturas.hpp"
 using namespace std;
 
 

@@ -255,7 +255,7 @@ int arvoreBin<Chave, Valor> :: rank(Chave chave) {
     return n_elements;
 }
 
-/* O(n) */
+/* O(logn*logn) */
 template <class Chave, class Valor>
 Chave arvoreBin<Chave, Valor> :: seleciona(int k) {
     Chave chave = "";

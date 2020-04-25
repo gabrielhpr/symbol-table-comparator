@@ -52,7 +52,7 @@ hashTable<Chave, Valor> :: hashTable(string nome_arquivo) {
 
     while(texto >> palavra) {
         insere(palavra, 1);
-        cout << palavra << endl;
+        //cout << palavra << endl;
     }
 
     texto.close();
