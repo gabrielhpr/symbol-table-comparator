@@ -52,7 +52,6 @@ hashTable<Chave, Valor> :: hashTable(string nome_arquivo) {
 
     while(texto >> palavra) {
         insere(palavra, 1);
-        //cout << palavra << endl;
     }
 
     texto.close();
@@ -158,13 +157,13 @@ void hashTable<Chave, Valor> :: remove(Chave chave) {
                     if(aux->prox != nullptr)
                         aux->prox->ant = aux->ant;
                     delete aux;
-                    break;
+                    return;
                 }
                 aux->ant->prox = aux->prox;
                 if(aux->prox != nullptr)
                     aux->prox->ant = aux->ant;
                 delete aux;
-                break;
+                return;
             }
             aux = aux->prox;
         }
@@ -193,10 +192,12 @@ int hashTable<Chave, Valor> :: rank(Chave chave) {
 template <class Chave, class Valor>
 Chave hashTable<Chave, Valor> :: seleciona(int k) {
     CelulasHash* aux;
+    int r;
     for (int i = 0; i < m; i++) {
         aux = table[i];
         while(aux != nullptr) {
-            if(rank(aux->chave) == k) {
+            r = rank(aux->chave);
+            if(r == k) {
                 return aux->chave;
             }
             aux = aux->prox;

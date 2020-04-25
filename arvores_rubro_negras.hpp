@@ -311,7 +311,6 @@ void arvoreRN<Chave, Valor> :: remove(Chave chave) {
 
     //Raiz nula
     if(raiz == nullptr) {
-        cout << "Não há elementos para serem removidos" << endl;
         return;
     }
 

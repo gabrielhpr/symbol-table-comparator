@@ -159,5 +159,4 @@ void vetorOrd<Chave, Valor> :: exibeTS() {
     cout << n << endl;
 }
 
-
 #endif

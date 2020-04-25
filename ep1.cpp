@@ -223,14 +223,6 @@ void testeOperacoes(ST st) {
                 cout << key << "\n";
             }
         }
-        else if (operacao == "e") {
-            st->exibeTS();
-        }
-        else if (operacao == "i") {
-            string el;
-            cin >> el;
-            st->insere(el, 1);
-        }
         /*---------------------------------*/
         else if (operacao == DELMIN_ST) {
             key = st->seleciona(0);
@@ -263,17 +255,12 @@ void testeOperacoes(ST st) {
                         cout << key << ": " << frequencia << "\n";
                     }
                 }
-                
                 /*---------------------------------*/
                 else if (operacao == RANK_ST) {
                     int r = st->rank(key);
                     cout << r << "\n";
                 }
                 /*---------------------------------*/
-                else if (operacao == "d"/*DELETE_ST*/) {
-                    st->remove(key);
-                    cout << "\"" << key << "\" foi removida\n";
-                }
                 else if (operacao == SELECT_ST) {
                     int pos = stoi(key);
                     string chave = st->seleciona(pos);
