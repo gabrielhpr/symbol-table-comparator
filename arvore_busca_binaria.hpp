@@ -18,7 +18,7 @@ class arvoreBin {
         NoABB* criaNo(Chave chave, Item valor);
 
         /*Número de elementos*/
-        int n;//public
+        int n;
 
         /*Métodos da TS*/
         void insere(Chave chave, Item valor);
